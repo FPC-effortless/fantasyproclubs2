@@ -12,14 +12,7 @@ export const metadata: Metadata = {
   description: 'Manage your Swiss model competition with advanced draw and scheduling features.',
 }
 
-interface SwissLayoutProps {
-  children: React.ReactNode
-  params: {
-    id: string
-  }
-}
-
-export default async function SwissLayout({ children, params }: SwissLayoutProps) {
+export default async function SwissLayout({ children, params }: { children: React.ReactNode; params: { id: string } }) {
   // Get cookie store for Supabase client
   const cookieStore = cookies()
   
