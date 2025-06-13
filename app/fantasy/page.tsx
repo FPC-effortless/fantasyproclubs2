@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -161,6 +162,8 @@ interface SelectedPlayer {
 
 
 export default function FantasyPage() {
+  const router = useRouter()
+  const { supabase, session } = useSupabase()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [fantasyTeam, setFantasyTeam] = useState<FantasyTeam | null>(null)
   const [standings, setStandings] = useState<CompetitionStanding[]>([])
@@ -192,11 +195,13 @@ export default function FantasyPage() {
   const [budget] = useState(100) // Fixed budget
   const [creatingTeam, setCreatingTeam] = useState(false)
   
-  const { supabase } = useSupabase()
-
   useEffect(() => {
+    if (!session) {
+      router.push('/auth/login?redirect=/fantasy')
+      return
+    }
     loadFantasyData()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [session]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (userProfile && !fantasyTeam) {
@@ -212,37 +217,26 @@ export default function FantasyPage() {
   }, [selectedCompetition]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadFantasyData = async () => {
+    if (!session) return
+    
     try {
       setLoading(true)
-      
-      if (!supabase) {
-        console.log('Supabase not available - showing minimal fantasy page')
-        setLoading(false)
-        return
-      }
-      
       await Promise.all([
         loadUserProfile(),
         loadFantasyTeam(),
         loadStandings(),
-        loadGameweekInfo()
-      ])
-      
-      // Load leaderboards after user profile is loaded to determine user's team
-      await Promise.all([
+        loadGameweekInfo(),
         loadLeagueLeaderboard(),
-        loadClubLeaderboard()
+        loadClubLeaderboard(),
+        loadFantasyCompetitions()
       ])
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error loading fantasy data:', error)
-      // Don't show error toast for auth issues - just log them
-      if (!error?.message?.includes('Auth')) {
       toast({
         title: "Error",
         description: "Failed to load fantasy data. Please try again.",
         variant: "destructive",
       })
-      }
     } finally {
       setLoading(false)
     }
@@ -513,358 +507,91 @@ export default function FantasyPage() {
 
   const loadLeagueLeaderboard = async () => {
     try {
-      console.log('Loading league leaderboard...')
-      
-      // Query all fantasy teams with user profiles
-      const { data: fantasyTeamsData, error: teamsError } = await supabase
-        .from('fantasy_teams')
+      const { data: leaderboard, error } = await supabase
+        .from('fantasy_leaderboard')
         .select(`
-          id,
-          name,
-          points,
-          user_id
+          position,
+          user_id,
+          user_profile:user_profiles (
+            display_name,
+            username,
+            avatar_url
+          ),
+          fantasy_team:fantasy_teams (
+            name,
+            points
+          )
         `)
-        .order('points', { ascending: false })
-        .limit(50)
+        .order('position', { ascending: true })
+        .limit(10)
 
-      if (teamsError) {
-        // Check if it's a missing table error first
-        if (teamsError.message?.includes('does not exist') || teamsError.code === '42P01' || JSON.stringify(teamsError) === '{}') {
-          console.log('Fantasy teams table not found - showing placeholder')
-          setLeagueLeaderboard([
-            {
-              position: 1,
-              user_id: 'placeholder-1',
-              user_profile: { display_name: '⚠️ Fantasy Database Not Set Up', username: null, avatar_url: null },
-              fantasy_team: { name: 'Create fantasy_teams table', points: 0 }
-            },
-            {
-              position: 2,
-              user_id: 'placeholder-2',  
-              user_profile: { display_name: '🏆 Ready for Fantasy League', username: null, avatar_url: null },
-              fantasy_team: { name: 'Set up fantasy system', points: 0 }
-            }
-          ])
-        } else {
-          console.error('Error loading fantasy teams:', teamsError)
-          setLeagueLeaderboard([])
-        }
-        return
-      }
+      if (error) throw error
 
-      if (!fantasyTeamsData || fantasyTeamsData.length === 0) {
-        console.log('No fantasy teams found')
-        setLeagueLeaderboard([])
-        return
-      }
-
-      // Get user profiles for all fantasy team owners
-      const userIds = fantasyTeamsData.map(team => team.user_id)
-      let profilesData = null
-      
-      try {
-        const { data, error: profilesError } = await supabase
-          .from('user_profiles')
-          .select('user_id, display_name, username, avatar_url')
-          .in('user_id', userIds)
-
-        if (profilesError) {
-          if (profilesError.message?.includes('does not exist') || profilesError.code === '42P01') {
-            console.log('User profiles table not found - using fallback names')
-          } else {
-            console.error('Error loading user profiles:', profilesError)
-          }
-        } else {
-          profilesData = data
-        }
-      } catch (error) {
-        console.log('User profiles not available - using fallback names')
-      }
-
-      // Transform data for leaderboard
-      const leaderboard: FantasyLeaderboardEntry[] = fantasyTeamsData.map((team, index) => {
-        const profile = profilesData?.find(p => p.user_id === team.user_id)
-        const displayName = profile?.display_name || profile?.username || `Manager ${index + 1}`
-        
-        return {
-          position: index + 1,
-          user_id: team.user_id,
-          user_profile: {
-            display_name: displayName,
-            username: profile?.username || displayName,
-            avatar_url: profile?.avatar_url || null
-          },
-          fantasy_team: {
-            name: team.name,
-            points: team.points || 0
-          }
-        }
-      })
-
-      setLeagueLeaderboard(leaderboard)
-      console.log(`Loaded ${leaderboard.length} fantasy teams for league leaderboard`)
-      
+      setLeagueLeaderboard(leaderboard.map((t: any) => ({
+        position: t.position,
+        user_id: t.user_id,
+        user_profile: t.user_profile,
+        fantasy_team: t.fantasy_team
+      })))
     } catch (error) {
       console.error('Error loading league leaderboard:', error)
-      setLeagueLeaderboard([])
     }
   }
 
   const loadClubLeaderboard = async () => {
     try {
-      console.log('Loading club leaderboard...')
-      
-      if (!userProfile) {
-        console.log('No user profile - cannot determine club')
-        setClubLeaderboard([
-          {
-            position: 1,
-            user_id: 'placeholder-1',
-            user_profile: { display_name: '🔐 Sign In Required', username: null, avatar_url: null },
-            fantasy_team: { name: 'Sign in to see your club leaderboard', points: 0 }
-          }
-        ])
-        return
-      }
-
-      // First, find what team the current user is following
-      let userTeamId = null
-      
-      // Check if user is a player
-      const { data: playerData } = await supabase
-        .from('players')
-        .select('team_id')
-        .eq('user_id', userProfile.id)
-        .limit(1)
-        .single()
-
-      if (playerData?.team_id) {
-        userTeamId = playerData.team_id
-        console.log('User is a player for team:', userTeamId)
-      } else {
-        // Check if user is a manager
-        const { data: managerData } = await supabase
-          .from('team_managers')
-          .select('team_id')
-          .eq('user_id', userProfile.id)
-          .limit(1)
-          .single()
-
-        if (managerData?.team_id) {
-          userTeamId = managerData.team_id
-          console.log('User is a manager for team:', userTeamId)
-        } else {
-          // Check if user is a fan (if you have a fans table)
-          const { data: fanData } = await supabase
-            .from('team_fans')
-            .select('team_id')
-            .eq('user_id', userProfile.id)
-            .limit(1)
-            .single()
-
-          if (fanData?.team_id) {
-            userTeamId = fanData.team_id
-            console.log('User is a fan of team:', userTeamId)
-          }
-        }
-      }
-
-      if (!userTeamId) {
-        console.log('User is not associated with any team')
-        setClubLeaderboard([
-          {
-            position: 1,
-            user_id: 'placeholder-1',
-            user_profile: { display_name: '📋 No Team Association', username: null, avatar_url: null },
-            fantasy_team: { name: 'Join a team as player, manager, or fan', points: 0 }
-          }
-        ])
-        return
-      }
-
-      // Find all users associated with the same team
-      const teamUserIds = new Set<string>()
-
-      // Get all players from the team
-      const { data: teamPlayers } = await supabase
-        .from('players')
-        .select('user_id')
-        .eq('team_id', userTeamId)
-        .eq('status', 'active')
-
-      teamPlayers?.forEach(player => teamUserIds.add(player.user_id))
-
-      // Get all managers from the team
-      const { data: teamManagers } = await supabase
-        .from('team_managers')
-        .select('user_id')
-        .eq('team_id', userTeamId)
-
-      teamManagers?.forEach(manager => teamUserIds.add(manager.user_id))
-
-      // Get all fans from the team (if table exists)
-      const { data: teamFans } = await supabase
-        .from('team_fans')
-        .select('user_id')
-        .eq('team_id', userTeamId)
-
-      teamFans?.forEach(fan => teamUserIds.add(fan.user_id))
-
-      const teamUserIdArray = Array.from(teamUserIds)
-      
-      if (teamUserIdArray.length === 0) {
-        console.log('No team members found')
-        setClubLeaderboard([])
-        return
-      }
-
-      // Get team name first for error messages
-      const { data: clubTeamData } = await supabase
-        .from('teams')
-        .select('name')
-        .eq('id', userTeamId)
-        .single()
-
-      // Get fantasy teams for team members
-      const { data: fantasyTeamsData, error: teamsError } = await supabase
-        .from('fantasy_teams')
+      const { data: leaderboard, error } = await supabase
+        .from('fantasy_club_leaderboard')
         .select(`
-          id,
-          name,
-          points,
-          user_id
+          position,
+          user_id,
+          user_profile:user_profiles (
+            display_name,
+            username,
+            avatar_url
+          ),
+          fantasy_team:fantasy_teams (
+            name,
+            points
+          ),
+          team_name
         `)
-        .in('user_id', teamUserIdArray)
-        .order('points', { ascending: false })
+        .order('position', { ascending: true })
+        .limit(10)
 
-      if (teamsError) {
-        // Check if it's a missing table error first
-        if (teamsError.message?.includes('does not exist') || teamsError.code === '42P01' || JSON.stringify(teamsError) === '{}') {
-          console.log('Fantasy teams table not found for club leaderboard')
-          setClubLeaderboard([
-            {
-              position: 1,
-              user_id: 'placeholder-1',
-              user_profile: { display_name: '⚠️ Fantasy System Not Set Up', username: null, avatar_url: null },
-              fantasy_team: { name: 'Fantasy teams table needed', points: 0 },
-              team_name: clubTeamData?.name || 'Your Team'
-            }
-          ])
-        } else {
-          console.error('Error loading club fantasy teams:', teamsError)
-          setClubLeaderboard([])
-        }
-        return
-      }
+      if (error) throw error
 
-      if (!fantasyTeamsData || fantasyTeamsData.length === 0) {
-        console.log('No fantasy teams found for team members')
-        setClubLeaderboard([])
-        return
-      }
-
-             // Get user profiles
-       let profilesData = null
-       try {
-         const { data } = await supabase
-           .from('user_profiles')
-           .select('user_id, display_name, username, avatar_url')
-           .in('user_id', fantasyTeamsData.map(t => t.user_id))
-
-         profilesData = data
-       } catch (error) {
-         console.log('User profiles not available for club leaderboard')
-       }
-
-       const teamName = clubTeamData?.name || 'Your Team'
-
-      // Transform data for club leaderboard
-      const clubLeaderboard: FantasyLeaderboardEntry[] = fantasyTeamsData.map((team, index) => {
-        const profile = profilesData?.find(p => p.user_id === team.user_id)
-        const displayName = profile?.display_name || profile?.username || `Team Member ${index + 1}`
-        
-        return {
-          position: index + 1,
-          user_id: team.user_id,
-          user_profile: {
-            display_name: displayName,
-            username: profile?.username || displayName,
-            avatar_url: profile?.avatar_url || null
-          },
-          fantasy_team: {
-            name: team.name,
-            points: team.points || 0
-          },
-          team_name: teamName
-        }
-      })
-
-      setClubLeaderboard(clubLeaderboard)
-      console.log(`Loaded ${clubLeaderboard.length} fantasy teams for ${teamName} club leaderboard`)
-      
+      setClubLeaderboard(leaderboard.map((s: any) => ({
+        position: s.position,
+        user_id: s.user_id,
+        user_profile: s.user_profile,
+        fantasy_team: s.fantasy_team,
+        team_name: s.team_name
+      })))
     } catch (error) {
       console.error('Error loading club leaderboard:', error)
-      setClubLeaderboard([])
     }
   }
 
   const loadFantasyCompetitions = async () => {
     try {
-      if (!supabase) return
-
-      const { data, error } = await supabase
+      const { data: competitions, error } = await supabase
         .from('competitions')
-        .select('id, name, type, status, fantasy_enabled')
+        .select('*')
         .eq('fantasy_enabled', true)
         .eq('status', 'active')
-        .order('name')
 
-      if (error) {
-        console.error('Error loading fantasy competitions:', error)
-        return
-      }
-
-      console.log('Found fantasy-enabled competitions:', data)
-      setFantasyCompetitions(data || [])
-      
-      // Auto-select first competition
-      if (data && data.length > 0) {
-        setSelectedCompetition(data[0].id)
-      }
+      if (error) throw error
+      setFantasyCompetitions(competitions || [])
     } catch (error) {
-      console.error('Error in loadFantasyCompetitions:', error)
+      console.error('Error loading fantasy competitions:', error)
+      setFantasyCompetitions([])
     }
   }
 
   const loadPlayersForCompetition = async (competitionId: string) => {
     try {
-      if (!supabase) return
-
-      console.log('Loading players for competition:', competitionId)
-
-      // First get teams in the competition
-      const { data: competitionTeams, error: teamsError } = await supabase
-        .from('competition_teams')
-        .select('team_id')
-        .eq('competition_id', competitionId)
-
-      if (teamsError) {
-        console.error('Error loading competition teams:', teamsError)
-        setAvailablePlayers([])
-        return
-      }
-
-      if (!competitionTeams || competitionTeams.length === 0) {
-        console.log('No teams found in competition')
-        setAvailablePlayers([])
-        return
-      }
-
-      const teamIds = competitionTeams.map(ct => ct.team_id)
-      console.log('Found team IDs:', teamIds)
-
-      // Get players from those teams with fantasy stats (including managers)
-      const { data: playersData, error: playersError } = await supabase
+      const { data: players, error } = await supabase
         .from('players')
         .select(`
           id,
@@ -873,159 +600,79 @@ export default function FantasyPage() {
           number,
           status,
           team_id,
-          is_manager,
           fantasy_price,
           fantasy_points,
-          avatar_url
-        `)
-        .in('team_id', teamIds)
-        .eq('status', 'active')
-        .order('is_manager', { ascending: false }) // Managers first
-        .order('number')
-
-      if (playersError) {
-        console.error('Error loading players:', playersError)
-        // Fallback query without new columns if they don't exist yet
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('players')
-          .select(`
+          is_manager,
+          avatar_url,
+          user_profile:user_profiles (
+            display_name,
+            username,
+            avatar_url
+          ),
+          team:teams (
             id,
-            user_id,
-            position,
-            number,
-            status,
-            team_id
-          `)
-          .in('team_id', teamIds)
-          .eq('status', 'active')
-          .order('number')
+            name,
+            short_name,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
 
-        if (fallbackError) {
-          console.error('Fallback query also failed:', fallbackError)
-          setAvailablePlayers([])
-          return
-        }
+      if (error) throw error
 
-        // Add default values for missing columns and process fallback data
-        const processedPlayersData = (fallbackData || []).map(player => ({
-          ...player,
-          is_manager: false,
-          fantasy_price: 5.0,
-          fantasy_points: 0.0,
-          avatar_url: null
-        }))
-
-        console.log('🔄 Using fallback data with defaults')
-        
-        if (processedPlayersData.length === 0) {
-          console.log('No players found for competition')
-          setAvailablePlayers([])
-          return
-        }
-
-        // Continue with processing using fallback data
-        await processPlayersData(processedPlayersData, supabase, competitionId)
-        return
+      interface PlayerData {
+        id: string;
+        user_id: string;
+        position: string;
+        number: number;
+        status: string;
+        team_id: string;
+        fantasy_price: number;
+        fantasy_points: number;
+        is_manager: boolean;
+        avatar_url: string | null;
+        user_profile: {
+          display_name: string;
+          username: string;
+          avatar_url: string | null;
+        } | null;
+        team: {
+          id: string;
+          name: string;
+          short_name: string;
+          logo_url: string | null;
+        } | null;
       }
 
-      const processedPlayersData = playersData || []
-
-      if (processedPlayersData.length === 0) {
-        console.log('No players found for competition')
-        setAvailablePlayers([])
-        return
-      }
-
-      await processPlayersData(processedPlayersData, supabase, competitionId)
-
-    } catch (error) {
-      console.error('Error in loadPlayersForCompetition:', error)
-      setAvailablePlayers([])
-    }
-  }
-
-  // Helper function to process players data
-  const processPlayersData = async (processedPlayersData: any[], supabase: any, competitionId: string) => {
-    // Get user profiles for these players - with robust error handling
-    let userProfiles: any[] = []
-    let profilesError: any = null
-    
-    try {
-      const result = await supabase
-        .from('user_profiles')
-        .select('id, display_name, username, avatar_url')
-        .in('id', processedPlayersData.map(p => p.user_id))
-      
-      if (result.error) {
-        if (result.error.code === '42703') {
-          console.log('🔄 Avatar column not found, retrying without avatar_url...')
-          const fallbackResult = await supabase
-            .from('user_profiles')
-            .select('id, display_name, username')
-            .in('id', processedPlayersData.map(p => p.user_id))
-          
-          userProfiles = fallbackResult.data || []
-          profilesError = fallbackResult.error
-        } else {
-          userProfiles = result.data || []
-          profilesError = result.error
-        }
-      } else {
-        userProfiles = result.data || []
-      }
-    } catch (error) {
-      console.error('💥 Error loading user profiles:', error)
-      profilesError = error
-      userProfiles = []
-    }
-
-    // Get teams for these players
-    const { data: teamsData, error: teamsDataError } = await supabase
-      .from('teams')
-      .select('id, name, short_name, logo_url')
-      .in('id', processedPlayersData.map(p => p.team_id))
-
-    console.log('Teams query result:', { teams: teamsData?.length, teamsDataError })
-
-    // Get fantasy stats for these players (fallback for existing system)
-    const { data: fantasyStats, error: statsError } = await supabase
-      .from('fantasy_player_stats')
-      .select('player_id, fantasy_points, fantasy_price')
-      .in('player_id', processedPlayersData.map(p => p.id))
-      .eq('competition_id', competitionId)
-
-    console.log('Fantasy stats query result:', { fantasyStats, statsError })
-
-    // Map players with fantasy data
-    const playersWithFantasy = processedPlayersData.map(player => {
-      const userProfile = userProfiles?.find(up => up.id === player.user_id)
-      const team = teamsData?.find(t => t.id === player.team_id)
-      
-      // Use player's fantasy_price/points if available, otherwise fallback to fantasy_player_stats
-      const playerFantasyPrice = player.fantasy_price || fantasyStats?.find(s => s.player_id === player.id)?.fantasy_price || 5.0
-      const playerFantasyPoints = player.fantasy_points || fantasyStats?.find(s => s.player_id === player.id)?.fantasy_points || 0
-
-      return {
-        ...player,
-        fantasy_price: playerFantasyPrice,
-        fantasy_points: playerFantasyPoints,
-        user_profile: userProfile || {
+      const processedPlayers = (players as unknown as PlayerData[]).map(player => ({
+        id: player.id,
+        user_id: player.user_id,
+        position: player.position,
+        number: player.number,
+        status: player.status,
+        team_id: player.team_id,
+        fantasy_price: player.fantasy_price,
+        fantasy_points: player.fantasy_points,
+        is_manager: player.is_manager,
+        avatar_url: player.avatar_url,
+        user_profile: player.user_profile || {
           display_name: 'Unknown Player',
           username: 'unknown',
           avatar_url: null
         },
-        team: team || {
+        team: player.team || {
           id: player.team_id,
           name: 'Unknown Team',
           short_name: 'UNK',
           logo_url: null
         }
-      }
-    })
+      }))
 
-    console.log(`Loaded ${playersWithFantasy.length} players with fantasy data`)
-    console.log(`Manager-players: ${playersWithFantasy.filter(p => p.is_manager).length}`)
-    setAvailablePlayers(playersWithFantasy)
+      setAvailablePlayers(processedPlayers)
+    } catch (error) {
+      console.error('Error loading players:', error)
+      setAvailablePlayers([])
+    }
   }
 
   const handlePlayerAdd = (player: Player) => {
