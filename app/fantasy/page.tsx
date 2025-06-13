@@ -274,7 +274,7 @@ export default function FantasyPage() {
           ) : (
             <Card className="p-6 text-center">
               <p className="text-muted-foreground mb-4">
-                You haven't created a fantasy team yet
+                You haven&apos;t created a fantasy team yet
               </p>
               <Button onClick={() => setShowTeamCreation(true)}>
                 Create Team
