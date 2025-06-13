@@ -1,0 +1,13 @@
+.goalsBar {
+  width: 2rem;
+  background-color: #00ff87;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.possessionBar {
+  width: 2rem;
+  background-color: #00ff87;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+} 

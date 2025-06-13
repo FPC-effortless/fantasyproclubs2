@@ -1,0 +1,3 @@
+.teamLogo {
+  background: linear-gradient(135deg, var(--team-primary-color, #004225), var(--team-secondary-color, #ffffff20));
+} 

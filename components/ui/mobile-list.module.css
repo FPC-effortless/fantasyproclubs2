@@ -1,0 +1,42 @@
+.listItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.listItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.listItem:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.listItemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.listItemTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.listItemDescription {
+  font-size: 0.75rem;
+  color: rgb(156, 163, 175);
+}
+
+.listItemIcon {
+  margin-right: 0.75rem;
+  color: rgb(156, 163, 175);
+}
+
+.listItemAction {
+  margin-left: 0.75rem;
+  color: rgb(156, 163, 175);
+} 

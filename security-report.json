@@ -1,0 +1,485 @@
+{
+  "timestamp": "2025-06-08T18:52:47.385Z",
+  "summary": {
+    "totalTests": 5,
+    "criticalIssues": 0,
+    "warnings": 55,
+    "status": "PASS"
+  },
+  "results": [
+    {
+      "timestamp": "2025-06-08T18:52:47.311Z",
+      "level": "INFO",
+      "message": "Testing SQL Injection Prevention...",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.318Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in app\\api\\matches\\route.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.319Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in app\\api\\teams\\[id]\\fixtures\\route.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.320Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in app\\api\\teams\\[id]\\performance\\route.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.321Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in app\\api\\verify-gaming-tag\\route.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.325Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\auth-context.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.325Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\database\\secure-client.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.326Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\debug-utils.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.327Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\error-handler.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.329Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\interceptors.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.329Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\logger.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.329Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\rate-limit.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.330Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\security\\rate-limiter.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.330Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\services\\swiss-draw-engine.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.331Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\utils\\date.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.332Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\utils\\notifications.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.333Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\utils\\sanitize.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.333Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in lib\\utils\\supabase-query.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.343Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\account\\account-upgrade-form.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.344Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\account\\upgrade-notifications.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.345Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\admin-dashboard.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.346Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\competition-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.346Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\featured-content-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.347Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\lineup-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.347Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\match-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.348Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\match-statistics-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.349Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\pending-actions-dashboard.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.349Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\player-account-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.350Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\player-price-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.351Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\stats-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.352Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\team-logo-manager.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.353Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\team-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.353Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\trophies-management.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.354Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\upgrade-request-modal.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.354Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\upgrade-requests-dashboard.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.355Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\admin\\upgrade-statistics.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.355Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\auth\\multi-step-signup.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.356Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\auth\\signup-form.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.356Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\auth\\team-selection.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.357Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\fan-profile-screen.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.358Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\fantasy\\formation-grid.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.359Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\fantasy\\lineup-builder.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.359Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\gaming-platform\\gaming-tag-input.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.361Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\gaming-platform\\team-gaming-sessions.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.362Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\layouts\\user-layout.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.363Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\manager\\lineup-builder.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.363Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\manager\\lineup-submission.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.364Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\manager-profile-screen.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.365Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\player-profile-screen.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.366Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\providers\\supabase-provider.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.367Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\pwa\\pwa-registration.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.368Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\ui\\chart.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.370Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\ui\\form.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.372Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\ui\\progress.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.373Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\ui\\sidebar.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.374Z",
+      "level": "WARN",
+      "message": "SQL Injection Check: Found potential issue in components\\ui\\use-mobile.tsx",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.375Z",
+      "level": "PASS",
+      "message": "File exists: SECURITY_FIXES.sql",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.376Z",
+      "level": "INFO",
+      "message": "Testing Password Validation...",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.377Z",
+      "level": "PASS",
+      "message": "Password Validation: Password validation function exists - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.377Z",
+      "level": "PASS",
+      "message": "Password Validation: Minimum 8 character requirement - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.377Z",
+      "level": "PASS",
+      "message": "Password Validation: Uppercase letter requirement - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.378Z",
+      "level": "PASS",
+      "message": "Password Validation: Lowercase letter requirement - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.378Z",
+      "level": "PASS",
+      "message": "Password Validation: Number requirement - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.378Z",
+      "level": "PASS",
+      "message": "Password Validation: Special character requirement - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.379Z",
+      "level": "INFO",
+      "message": "Testing Rate Limiting...",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.379Z",
+      "level": "PASS",
+      "message": "Rate Limiting: Rate limiting implementation - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.380Z",
+      "level": "PASS",
+      "message": "Rate Limiting: Middleware implementation - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.380Z",
+      "level": "PASS",
+      "message": "Rate Limiting: HTTP 429 status code for rate limiting - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.380Z",
+      "level": "INFO",
+      "message": "Testing Error Handling...",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.381Z",
+      "level": "PASS",
+      "message": "File exists: lib/error-handler.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.382Z",
+      "level": "PASS",
+      "message": "Error Handling: Custom error classes - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.382Z",
+      "level": "PASS",
+      "message": "Error Handling: Error handling function - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.382Z",
+      "level": "PASS",
+      "message": "Error Handling: Specific error types - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.382Z",
+      "level": "INFO",
+      "message": "Testing Secure Database Implementation...",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.383Z",
+      "level": "PASS",
+      "message": "File exists: lib/database/secure-client.ts",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.384Z",
+      "level": "PASS",
+      "message": "Secure Database: Secure database client class - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.384Z",
+      "level": "PASS",
+      "message": "Secure Database: Input validation - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.384Z",
+      "level": "PASS",
+      "message": "Secure Database: Security event logging - Found",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-06-08T18:52:47.385Z",
+      "level": "INFO",
+      "message": "Generating Security Report...",
+      "details": ""
+    }
+  ]
+}

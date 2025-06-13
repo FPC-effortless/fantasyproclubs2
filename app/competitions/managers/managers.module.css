@@ -1,0 +1,7 @@
+.managerCard {
+  background: linear-gradient(135deg, var(--manager-primary-color, #004225), var(--manager-secondary-color, #ffffff20));
+}
+
+.managerStats {
+  background: linear-gradient(135deg, var(--stats-primary-color, #004225), var(--stats-secondary-color, #ffffff20));
+} 
