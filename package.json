@@ -19,7 +19,8 @@
     "security-check": "npm audit",
     "build:check": "npm run type-check && npm run lint && npm run test:ci && npm run build",
     "setup:resend": "node scripts/setup-resend.js",
-    "test:email": "node scripts/test-email.js"
+    "test:email": "node scripts/test-email.js",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -80,10 +81,13 @@
     "uuid": "^11.1.0",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.5",
+    "preact": "^10.19.6",
+    "preact-compat": "^3.19.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@next/bundle-analyzer": "^15.2.4",
     "@supabase/supabase-js": "^2.49.10",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

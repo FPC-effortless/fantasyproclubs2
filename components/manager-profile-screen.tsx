@@ -35,6 +35,16 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import styles from "./manager-profile-screen.module.css"
 import { cn } from "@/lib/utils"
 import { LogoutButton } from "@/components/auth/logout-button"
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+import { LoadingState } from './loading-state';
+import type { BarProps, XAxisProps, YAxisProps } from 'recharts';
+
+// Create a separate dynamic chart component
+const DynamicChart = dynamic(() => import('./charts/performance-chart'), {
+  ssr: false,
+  loading: () => <LoadingState />
+});
 
 interface TeamMember {
   id: string
@@ -354,6 +364,15 @@ export function ManagerProfileScreen() {
     { id: "performance", label: "Stats", icon: BarChart3 },
   ]
 
+  // Replace chart implementation
+  const Chart = ({ data }: { data: any[] }) => {
+    return (
+      <Suspense fallback={<LoadingState />}>
+        <DynamicChart data={data} />
+      </Suspense>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white pb-16">
@@ -639,20 +658,7 @@ export function ManagerProfileScreen() {
                   <div className={styles.performanceChart}>
                     <div className={styles.chartContainer}>
                       <ResponsiveContainer>
-                        <BarChart data={profileData?.teamPerformance.performanceData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                          <XAxis dataKey="match" stroke="#9CA3AF" />
-                          <YAxis stroke="#9CA3AF" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "#1f2937",
-                              border: "1px solid #374151",
-                              borderRadius: "8px",
-                            }}
-                          />
-                          <Bar dataKey="goalsFor" fill="#00ff87" name="Goals For" />
-                          <Bar dataKey="goalsAgainst" fill="#EF4444" name="Goals Against" />
-                        </BarChart>
+                        <Chart data={profileData?.teamPerformance.performanceData} />
                       </ResponsiveContainer>
                     </div>
                   </div>

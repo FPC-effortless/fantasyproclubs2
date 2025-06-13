@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Competition {
   id: string
@@ -137,7 +138,7 @@ export default function FantasyStatisticsPage() {
       // Get players from those teams
       const { data: playersData, error: playersError } = await supabase
         .from('players')
-        .select('id, user_id, position, number, status, team_id')
+        .select('id, user_id, position, number, status, team_id, fantasy_price, fantasy_points')
         .in('team_id', teamIds)
         .eq('status', 'active')
         .order('number')

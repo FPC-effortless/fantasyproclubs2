@@ -183,7 +183,7 @@ export default function FantasyTransfersPage() {
       // Get players from those teams
       const { data: playersData, error: playersError } = await supabase
         .from('players')
-        .select('id, user_id, position, number, status, team_id')
+        .select('id, user_id, position, number, status, team_id, fantasy_price, fantasy_points')
         .in('team_id', teamIds)
         .eq('status', 'active')
         .order('number')

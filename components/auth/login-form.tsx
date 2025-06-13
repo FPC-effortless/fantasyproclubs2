@@ -55,7 +55,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email" className="text-sm font-medium text-gray-200">
           Email Address
@@ -67,7 +67,7 @@ export function LoginForm() {
           placeholder="name@example.com"
           value={formData.email}
           onChange={handleChange}
-          className="bg-gray-900/50 border-gray-800 text-white placeholder:text-gray-400"
+          className="bg-black/40 border-gray-800 text-white placeholder:text-gray-500 h-11"
           disabled={isLoading}
           required
         />
@@ -84,7 +84,7 @@ export function LoginForm() {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
-            className="bg-gray-900/50 border-gray-800 text-white placeholder:text-gray-400 pr-10"
+            className="bg-black/40 border-gray-800 text-white placeholder:text-gray-500 h-11 pr-10"
             disabled={isLoading}
             required
           />
@@ -97,9 +97,9 @@ export function LoginForm() {
             disabled={isLoading}
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4 text-gray-400" />
+              <EyeOff className="h-4 w-4 text-gray-500" />
             ) : (
-              <Eye className="h-4 w-4 text-gray-400" />
+              <Eye className="h-4 w-4 text-gray-500" />
             )}
           </Button>
         </div>
@@ -111,25 +111,25 @@ export function LoginForm() {
             id="remember"
             name="remember"
             aria-label="Remember me"
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            className="h-4 w-4 rounded border-gray-700 bg-black/40 text-green-500 focus:ring-green-500"
           />
           <Label
             htmlFor="remember"
-            className="text-sm font-medium text-gray-200"
+            className="text-sm font-medium text-gray-300"
           >
             Remember me
           </Label>
         </div>
         <Link
           href="/forgot-password"
-          className="text-sm font-medium text-primary hover:underline"
+          className="text-sm font-medium text-green-500 hover:text-green-400"
         >
           Forgot password?
         </Link>
       </div>
       <Button
         type="submit"
-        className="w-full bg-primary hover:bg-primary/90"
+        className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-medium"
         disabled={isLoading}
       >
         {isLoading ? (

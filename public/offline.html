@@ -3,30 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - Fantasy Pro Clubs</title>
+    <title>Offline - EA FC Pro Clubs Management</title>
     <style>
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #0f172a;
-            color: #ffffff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            background-color: #000;
+            color: #fff;
             text-align: center;
         }
 
         .container {
             max-width: 600px;
-            padding: 40px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
         }
 
         h1 {
@@ -39,50 +34,38 @@
             font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 2rem;
-            color: #94a3b8;
+            color: #9CA3AF;
         }
 
         .icon {
-            font-size: 4rem;
+            width: 64px;
+            height: 64px;
             margin-bottom: 2rem;
-            color: #00ff87;
         }
 
         .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
             background-color: #00ff87;
-            color: #0f172a;
-            padding: 12px 24px;
-            border-radius: 8px;
+            color: #000;
             text-decoration: none;
+            border-radius: 0.5rem;
             font-weight: 600;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s;
         }
 
         .button:hover {
             background-color: #00cc6a;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            p {
-                font-size: 1rem;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">📶</div>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="#00ff87"/>
+        </svg>
         <h1>You're Offline</h1>
-        <p>Don't worry! You can still access your cached content and continue using the app. Some features may be limited until you're back online.</p>
+        <p>Don't worry! You can still access your cached data and continue using the app. Some features may be limited until you're back online.</p>
         <a href="/" class="button">Try Again</a>
     </div>
 </body>

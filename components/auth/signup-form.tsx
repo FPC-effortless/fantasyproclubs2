@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, Phone, Loader2 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { getSupabaseClient } from "@/lib/supabase"
+import Link from "next/link"
 
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -153,21 +154,14 @@ export default function SignupForm() {
   }
 
   return (
-    <Card className="w-full max-w-md bg-[#1a1a1a] border-[#333333]">
-      <CardHeader>
-        <CardTitle className="text-[#00ff87] text-2xl font-bold text-center">
-          Create Account
-        </CardTitle>
-        <CardDescription className="text-center text-gray-400">
-          Join Fantasy Pro Clubs and start your journey
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-black px-4 pb-24 pt-12 overflow-x-hidden">
+      <div className="w-full max-w-md">
+        <h1 className="text-2xl font-bold text-center text-green-400 mb-6">Create Account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-white">First Name *</Label>
+              <Label htmlFor="firstName" className="text-sm font-medium text-gray-200">First Name *</Label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                 <Input
@@ -177,13 +171,13 @@ export default function SignupForm() {
                   required
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className="pl-10 bg-[#2a2a2a] border-[#444444] text-white"
+                  className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500"
                   placeholder="John"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-white">Last Name *</Label>
+              <Label htmlFor="lastName" className="text-sm font-medium text-gray-200">Last Name *</Label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                 <Input
@@ -193,16 +187,15 @@ export default function SignupForm() {
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="pl-10 bg-[#2a2a2a] border-[#444444] text-white"
+                  className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500"
                   placeholder="Doe"
                 />
               </div>
             </div>
           </div>
-
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">Email *</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-200">Email *</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
@@ -212,15 +205,14 @@ export default function SignupForm() {
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="pl-10 bg-[#2a2a2a] border-[#444444] text-white"
+                className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500"
                 placeholder="john@example.com"
               />
             </div>
           </div>
-
           {/* Phone Number */}
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber" className="text-white">Phone Number</Label>
+            <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-200">Phone Number</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
@@ -229,15 +221,14 @@ export default function SignupForm() {
                 type="tel"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
-                className="pl-10 bg-[#2a2a2a] border-[#444444] text-white"
+                className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500"
                 placeholder="+1 (555) 123-4567"
               />
             </div>
           </div>
-
           {/* Date of Birth */}
           <div className="space-y-2">
-            <Label htmlFor="dateOfBirth" className="text-white">Date of Birth</Label>
+            <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-200">Date of Birth</Label>
             <Input
               id="dateOfBirth"
               name="dateOfBirth"
@@ -246,13 +237,12 @@ export default function SignupForm() {
               onChange={handleInputChange}
               title="Select your date of birth"
               aria-label="Date of birth"
-              className="bg-[#2a2a2a] border-[#444444] text-white"
+              className="h-11 bg-black/40 border-gray-800 text-white"
             />
           </div>
-
           {/* Password */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-white">Password *</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-200">Password *</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
@@ -262,24 +252,27 @@ export default function SignupForm() {
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                className="pl-10 pr-10 bg-[#2a2a2a] border-[#444444] text-white"
-                placeholder="••••••••"
+                className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500 pr-10"
+                placeholder="Create a password"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                title={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-3 text-gray-500 hover:text-white"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-500" />
+                )}
+              </Button>
             </div>
           </div>
-
           {/* Confirm Password */}
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-white">Confirm Password *</Label>
+            <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-200">Confirm Password *</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
@@ -289,50 +282,62 @@ export default function SignupForm() {
                 required
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="pl-10 pr-10 bg-[#2a2a2a] border-[#444444] text-white"
-                placeholder="••••••••"
+                className="pl-10 h-11 bg-black/40 border-gray-800 text-white placeholder:text-gray-500 pr-10"
+                placeholder="Confirm your password"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                title={showConfirmPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-3 text-gray-500 hover:text-white"
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-500" />
+                )}
+              </Button>
             </div>
           </div>
-
           {/* Terms and Conditions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <input
               type="checkbox"
               id="terms"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-gray-700 bg-black/40 text-green-500 focus:ring-green-500"
               title="Agree to terms and conditions"
-              aria-label="Agree to terms and conditions"
-              className="rounded border-[#444444] bg-[#2a2a2a] text-[#00ff87]"
+              placeholder="Agree to terms and conditions"
             />
-            <Label htmlFor="terms" className="text-sm text-gray-400 cursor-pointer">
+            <Label htmlFor="terms" className="text-sm text-gray-300">
               I agree to the{" "}
-              <a href="/terms" className="text-[#00ff87] hover:underline">
-                Terms and Conditions
-              </a>
+              <Link href="/terms" className="text-green-500 hover:text-green-400">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-green-500 hover:text-green-400">
+                Privacy Policy
+              </Link>
             </Label>
           </div>
-
-          {/* Submit Button */}
           <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-[#00ff87] text-black hover:bg-[#00cc6a] font-semibold"
+            className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-medium"
+            disabled={isLoading || !agreedToTerms}
           >
-            {isLoading ? "Creating Account..." : "Continue"}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              "Create Account"
+            )}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 } 

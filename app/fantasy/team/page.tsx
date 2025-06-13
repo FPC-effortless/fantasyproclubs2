@@ -16,6 +16,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/database'
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface FantasyTeam {
   id: string
@@ -162,7 +163,7 @@ export default function TeamPage() {
       // Get a sample of players (first 15 for a basic team)
       const { data: playersData, error: playersError } = await supabase
         .from('players')
-        .select('id, user_id, position, number, status, team_id')
+        .select('id, user_id, position, number, status, team_id, fantasy_price, fantasy_points')
         .in('team_id', teamIds)
         .eq('status', 'active')
         .order('number')
@@ -564,10 +565,16 @@ export default function TeamPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900/20 to-gray-900 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading your fantasy team...</p>
+      <div className="min-h-screen bg-black text-white pb-16">
+        <div className="p-8 max-w-2xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+          <Skeleton className="h-10 w-full mb-4" />
+          <Skeleton className="h-40 w-full mb-4" />
+          <Skeleton className="h-10 w-1/3 mb-4" />
+          <Skeleton className="h-10 w-1/2" />
         </div>
       </div>
     )

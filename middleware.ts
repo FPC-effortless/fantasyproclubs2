@@ -167,7 +167,8 @@ export async function middleware(req: NextRequest) {
   
   const isPublicRoute = publicRoutes.some(route => 
     req.nextUrl.pathname === route || 
-    req.nextUrl.pathname.startsWith(route + '/')
+    req.nextUrl.pathname.startsWith(route + '/') ||
+    (route !== '/' && req.nextUrl.pathname.startsWith(route))
   )
 
   // Skip middleware for public routes

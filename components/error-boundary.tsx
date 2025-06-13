@@ -1,9 +1,6 @@
 "use client"
 
 import { Component, ErrorInfo, ReactNode } from "react"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Icons } from "@/components/icons"
 
 interface Props {
   children: ReactNode
@@ -12,13 +9,12 @@ interface Props {
 
 interface State {
   hasError: boolean
-  error: Error | null
+  error?: Error
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null,
   }
 
   public static getDerivedStateFromError(error: Error): State {
@@ -29,34 +25,20 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error("Uncaught error:", error, errorInfo)
   }
 
-  private handleReset = () => {
-    this.setState({ hasError: false, error: null })
-  }
-
   public render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
-
-      return (
-        <div className="container flex h-screen w-screen flex-col items-center justify-center">
-          <Alert variant="destructive" className="max-w-md">
-            <Icons.warning className="h-4 w-4" />
-            <AlertTitle>Something went wrong</AlertTitle>
-            <AlertDescription>
-              {this.state.error?.message || "An unexpected error occurred"}
-            </AlertDescription>
-            <div className="mt-4">
-              <Button
-                variant="outline"
-                onClick={this.handleReset}
-                className="w-full"
-              >
-                Try again
-              </Button>
-            </div>
-          </Alert>
+      return this.props.fallback || (
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
+          <h2 className="mb-2 text-lg font-semibold text-destructive">Something went wrong</h2>
+          <p className="text-sm text-muted-foreground">
+            {this.state.error?.message || "An unexpected error occurred"}
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+          >
+            Try again
+          </button>
         </div>
       )
     }
