@@ -1,326 +1,156 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronRight, Shirt, Users2, BarChart3, HelpCircle, Plus, Search, Trophy, X, Check, Crown, Settings } from "lucide-react"
-import { useSupabase } from "@/components/providers/supabase-provider"
-import { toast } from "@/components/ui/use-toast"
+import { Card } from "@/components/ui/card"
+import { ChevronRight, Shirt, Users2, BarChart3, HelpCircle } from "lucide-react"
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
-import { ErrorBoundary } from "@/components/error-boundary"
-import { LoadingState } from "@/components/loading-state"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useToast } from "@/components/ui/use-toast"
-import type { UserProfile, FantasyTeam, Standing, Player, Competition, Formation } from "@/types/fantasy"
-
-// Dynamic imports with loading states
-const TeamCreation = dynamic(
-  () => import("@/components/fantasy/team-creation"),
-  {
-    loading: () => <LoadingState />,
-    ssr: false
-  }
-)
-
-const Leaderboard = dynamic(
-  () => import("@/components/fantasy/leaderboard"),
-  {
-    loading: () => <LoadingState />,
-    ssr: false
-  }
-)
-
-const Standings = dynamic(
-  () => import("@/components/fantasy/standings"),
-  {
-    loading: () => <LoadingState />,
-    ssr: false
-  }
-)
-
-const GameweekInfo = dynamic(
-  () => import("@/components/fantasy/gameweek-info"),
-  {
-    loading: () => <LoadingState />,
-    ssr: false
-  }
-)
-
-// Fantasy formations defined inline to avoid import issues
-const FANTASY_FORMATIONS = [
-  {
-    name: "4-4-2",
-    positions: { GK: 1, DEF: 4, MID: 4, FWD: 2 },
-    description: "Balanced formation with solid midfield"
-  },
-  {
-    name: "4-3-3", 
-    positions: { GK: 1, DEF: 4, MID: 3, FWD: 3 },
-    description: "Attacking formation with wide forwards"
-  },
-  {
-    name: "4-5-1",
-    positions: { GK: 1, DEF: 4, MID: 5, FWD: 1 },
-    description: "Defensive formation with packed midfield"
-  },
-  {
-    name: "3-5-2",
-    positions: { GK: 1, DEF: 3, MID: 5, FWD: 2 },
-    description: "Modern formation with wing-backs"
-  }
-]
-
-// Position to fantasy role mapping
-const getFantasyRole = (position: string): 'GK' | 'DEF' | 'MID' | 'FWD' => {
-  const pos = position.toUpperCase()
-  if (pos === 'GK') return 'GK'
-  if (['CB', 'LB', 'RB', 'LWB', 'RWB'].includes(pos)) return 'DEF'
-  if (['CDM', 'CM', 'CAM', 'LM', 'RM'].includes(pos)) return 'MID'
-  if (['LW', 'RW', 'ST', 'CF'].includes(pos)) return 'FWD'
-  return 'MID' // default
-}
-
-// Formation validation
-const isLineupValid = (lineup: any[], formationName: string): boolean => {
-  const formation = FANTASY_FORMATIONS.find(f => f.name === formationName)
-  if (!formation) return false
-  
-  const count = { GK: 0, DEF: 0, MID: 0, FWD: 0 }
-  lineup.forEach(player => {
-    const role = player.fantasyRole || getFantasyRole(player.position)
-    if (role in count) count[role as keyof typeof count]++
-  })
-  
-  return count.GK === formation.positions.GK &&
-         count.DEF === formation.positions.DEF &&
-         count.MID === formation.positions.MID &&
-         count.FWD === formation.positions.FWD
-}
 
 export default function FantasyPage() {
-  const router = useRouter()
-  const supabase = createClientComponentClient()
-  const { toast } = useToast()
-
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [fantasyTeam, setFantasyTeam] = useState<FantasyTeam | null>(null)
-  const [standings, setStandings] = useState<Standing[]>([])
-  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([])
-  const [competitions, setCompetitions] = useState<Competition[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [showTeamCreation, setShowTeamCreation] = useState(false)
-  const [selectedCompetition, setSelectedCompetition] = useState("")
-  const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([])
-  const [selectedFormation, setSelectedFormation] = useState<Formation>({
-    name: "4-4-2",
-    positions: { GK: 1, DEF: 4, MID: 4, FWD: 2 },
-    description: "Balanced formation with solid midfield"
-  })
-  const [teamName, setTeamName] = useState("")
-  const [playerSearch, setPlayerSearch] = useState("")
-  const [selectedPosition, setSelectedPosition] = useState("all")
-  const [creatingTeam, setCreatingTeam] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const [stats, setStats] = useState({ totw: 0, points: 0, highest: 0 })
+  const [gameweek, setGameweek] = useState(33)
+  const [nextGameweek, setNextGameweek] = useState(34)
+  const [deadline, setDeadline] = useState("1D2H30M")
+  const [standings, setStandings] = useState([
+    { pos: 1, team: "Man United", gw: 43, total: 89 },
+    { pos: 2, team: "Man City", gw: 32, total: 78 },
+    { pos: 3, team: "Chelsea", gw: 36, total: 75 },
+    { pos: 4, team: "Arsenal", gw: 35, total: 73 },
+    { pos: 5, team: "Tottenham", gw: 20, total: 72 },
+  ])
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          const { data: profile } = await supabase
-            .from("user_profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single()
-          setUserProfile(profile)
-
-          const { data: team } = await supabase
-            .from("fantasy_teams")
-            .select("*")
-            .eq("manager_id", user.id)
-            .single()
-          setFantasyTeam(team)
-        }
-
-        const { data: standingsData } = await supabase
-          .from("fantasy_standings")
-          .select("*")
-          .order("points", { ascending: false })
-        setStandings(standingsData || [])
-
-        const { data: playersData } = await supabase
-          .from("players")
-          .select("*, user_profiles(*)")
-        setAvailablePlayers(playersData || [])
-
-        const { data: competitionsData } = await supabase
-          .from("competitions")
-          .select("*")
-        if (Array.isArray(competitionsData) && competitionsData.length > 0) {
-          setCompetitions(competitionsData)
-          setSelectedCompetition(competitionsData[0].id)
-        } else {
-          setCompetitions([])
-        }
-      } catch (error) {
-        console.error("Error loading data:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load fantasy data",
-          variant: "destructive"
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadData()
-  }, [supabase, toast])
-
-  const handleCreateTeam = async () => {
-    if (!userProfile) return
-
-    setCreatingTeam(true)
-    try {
-      const { data: team, error } = await supabase
-        .from("fantasy_teams")
-        .insert({
-          name: teamName,
-          manager_id: userProfile.id,
-          competition_id: selectedCompetition,
-          formation: selectedFormation.name,
-          players: selectedPlayers.map(p => p.id)
-        })
-        .select()
-        .single()
-
-      if (error) throw error
-
-      setFantasyTeam(team)
-      setShowTeamCreation(false)
-      toast({
-        title: "Success",
-        description: "Fantasy team created successfully"
+    // Simulate loading and fetch user profile/stats
+    setTimeout(() => {
+      setUserProfile({
+        name: "Eddysongram",
+        avatar_url: "/placeholder-avatar.svg",
+        role: "Manager"
       })
-    } catch (error) {
-      console.error("Error creating team:", error)
-      toast({
-        title: "Error",
-        description: "Failed to create fantasy team",
-        variant: "destructive"
-      })
-    } finally {
-      setCreatingTeam(false)
-    }
-  }
+      setStats({ totw: 108, points: 5, highest: 258 })
+      setLoading(false)
+    }, 500)
+  }, [])
 
-  if (isLoading) {
-    return <LoadingState />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+        <Skeleton className="h-32 w-80 rounded-2xl mb-6" />
+        <Skeleton className="h-8 w-40 mb-4" />
+        <Skeleton className="h-24 w-80 mb-4" />
+        <Skeleton className="h-40 w-80 mb-4" />
+      </div>
+    )
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Fantasy Pro Clubs</h1>
-        {!fantasyTeam && (
-          <Button onClick={() => setShowTeamCreation(true)}>
-            Create Team
-          </Button>
-        )}
+    <div className="min-h-screen bg-black text-white pb-8">
+      {/* Patterned Header */}
+      <div className="relative w-full h-48 rounded-b-3xl overflow-hidden flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #085b2a 60%, #0e4429 100%)' }}>
+        <Image src="/pattern.svg" alt="pattern" fill className="object-cover object-center opacity-40" />
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+          <h1 className="text-2xl font-bold tracking-wide text-white mt-4 mb-2 drop-shadow-lg">FANTASY</h1>
+          <div className="flex flex-col items-center mt-2">
+            <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+              <Image src={userProfile.avatar_url} alt="avatar" width={80} height={80} className="object-cover w-full h-full" />
+            </div>
+            <span className="mt-2 text-lg font-semibold text-white">{userProfile.name}</span>
+            <span className="mt-1 px-3 py-1 bg-white/10 text-xs rounded-lg border border-white/20 text-white">Manager</span>
+          </div>
+        </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="my-team">My Team</TabsTrigger>
-          <TabsTrigger value="transfers">Transfers</TabsTrigger>
-          <TabsTrigger value="fixtures">Fixtures</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <GameweekInfo
-              currentGameweek={1}
-              nextGameweek={2}
-              deadline="2024-03-20 18:30"
-              isLoading={isLoading}
-            />
-            <Leaderboard
-              standings={standings}
-              isLoading={isLoading}
-            />
+      {/* Gameweek Stats */}
+      <div className="mt-6 flex flex-col items-center">
+        <span className="text-lg font-semibold">Gameweek {gameweek}</span>
+        <div className="w-full flex justify-center mt-2">
+          <div className="grid grid-cols-3 gap-4 w-full max-w-xs">
+            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
+              <span className="text-2xl font-bold">{stats.totw}</span>
+              <span className="text-xs text-green-200 mt-1">TOTW</span>
+            </div>
+            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
+              <span className="text-2xl font-bold">{stats.points}</span>
+              <span className="text-xs text-green-200 mt-1">Points</span>
+            </div>
+            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
+              <span className="text-2xl font-bold">{stats.highest}</span>
+              <span className="text-xs text-green-200 mt-1">Highest</span>
+            </div>
           </div>
-          <Standings
-            standings={standings}
-            isLoading={isLoading}
-          />
-        </TabsContent>
+        </div>
+      </div>
 
-        <TabsContent value="my-team">
-          {fantasyTeam ? (
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">{fantasyTeam.name}</h2>
-              {/* Team details will go here */}
-            </Card>
-          ) : (
-            <Card className="p-6 text-center">
-              <p className="text-muted-foreground mb-4">
-                You haven&apos;t created a fantasy team yet
-              </p>
-              <Button onClick={() => setShowTeamCreation(true)}>
-                Create Team
-              </Button>
-            </Card>
-          )}
-        </TabsContent>
+      {/* Gameweek & Deadline */}
+      <div className="flex justify-between items-center mt-8 px-6">
+        <span className="text-base font-semibold">Gameweek {nextGameweek}</span>
+        <span className="text-xs text-gray-300 font-semibold">DEADLINE {deadline}</span>
+      </div>
 
-        <TabsContent value="transfers">
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Transfers</h2>
-            {/* Transfers will go here */}
+      {/* Main Navigation Cards */}
+      <div className="grid grid-cols-2 gap-4 mt-4 px-4">
+        <Link href="/fantasy/team">
+          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
+            <Shirt className="w-10 h-10 text-green-400 mb-2" />
+            <span className="font-semibold text-white">My Team</span>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="fixtures">
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Fixtures</h2>
-            {/* Fixtures will go here */}
+        </Link>
+        <Link href="/fantasy/transfers">
+          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
+            <Users2 className="w-10 h-10 text-green-400 mb-2" />
+            <span className="font-semibold text-white">Transfers</span>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </Link>
+        <Link href="/fantasy/statistics">
+          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
+            <BarChart3 className="w-10 h-10 text-green-400 mb-2" />
+            <span className="font-semibold text-white">Statistics</span>
+          </Card>
+        </Link>
+        <Link href="/fantasy/help">
+          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
+            <HelpCircle className="w-10 h-10 text-green-400 mb-2" />
+            <span className="font-semibold text-white">Help & Rules</span>
+          </Card>
+        </Link>
+      </div>
 
-      {showTeamCreation && (
-        <TeamCreation
-          competitions={competitions}
-          selectedCompetition={selectedCompetition}
-          onCompetitionChange={setSelectedCompetition}
-          availablePlayers={availablePlayers}
-          selectedPlayers={selectedPlayers}
-          selectedFormation={selectedFormation}
-          onFormationChange={setSelectedFormation}
-          teamName={teamName}
-          onTeamNameChange={setTeamName}
-          playerSearch={playerSearch}
-          onPlayerSearchChange={setPlayerSearch}
-          selectedPosition={selectedPosition}
-          onPositionChange={setSelectedPosition}
-          budget={100}
-          creatingTeam={creatingTeam}
-          onPlayerAdd={(player) => setSelectedPlayers([...selectedPlayers, player])}
-          onPlayerRemove={(playerId) => setSelectedPlayers(selectedPlayers.filter(p => p.id !== playerId))}
-          onCreateTeam={handleCreateTeam}
-          onClose={() => setShowTeamCreation(false)}
-        />
-      )}
+      {/* League/Club Toggle */}
+      <div className="flex justify-center mt-8">
+        <button className="bg-green-800 text-white font-semibold px-8 py-2 rounded-full focus:outline-none">League</button>
+        <button className="ml-4 bg-transparent text-white font-semibold px-8 py-2 rounded-full border border-green-800 focus:outline-none">Club</button>
+      </div>
+
+      {/* Standings Table */}
+      <div className="mt-4 px-2">
+        <div className="bg-green-900 rounded-t-xl flex px-4 py-2 text-green-100 text-xs font-semibold">
+          <div className="w-8">Pos</div>
+          <div className="flex-1">Team</div>
+          <div className="w-12 text-right">GW{gameweek}</div>
+          <div className="w-12 text-right">Total</div>
+        </div>
+        {standings.map((row) => (
+          <div key={row.pos} className="flex items-center px-4 py-2 border-b border-green-900 text-white text-sm">
+            <div className="w-8">{row.pos}</div>
+            <div className="flex-1 flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-400" />
+              {row.team}
+            </div>
+            <div className="w-12 text-right">{row.gw}</div>
+            <div className="w-12 text-right">{row.total}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* View All Button */}
+      <div className="flex justify-center mt-6">
+        <Button className="w-full max-w-xs bg-green-800 hover:bg-green-700 text-white rounded-xl py-3 text-base font-semibold">View All</Button>
+      </div>
     </div>
   )
 }

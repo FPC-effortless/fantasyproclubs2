@@ -1,7 +1,7 @@
 // CLEAN BUILD TRIGGER
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 
@@ -15,24 +15,31 @@ export const metadata: Metadata = {
 
 type SwissLayoutComponentProps = {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function SwissLayout({ children, params }: SwissLayoutComponentProps) {
-  // Get cookie store for Supabase client
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   
-  // Create Supabase client
-  const supabase = createServerComponentClient({ 
-    cookies: () => cookieStore 
-  })
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+      },
+    }
+  )
 
   try {
-    // Check if competition exists and is a Swiss model
+    const { id } = await params;
+
     const { data: competition, error } = await supabase
       .from('competitions')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('type', 'swiss')
       .single()
 

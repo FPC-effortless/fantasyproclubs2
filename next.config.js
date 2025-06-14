@@ -20,9 +20,6 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
 
-  // Enable SWC minification
-  swcMinify: true,
-
   // Optimize production builds
   productionBrowserSourceMaps: false,
 
