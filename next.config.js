@@ -16,7 +16,7 @@ const nextConfig = {
   
   // Optimize images
   images: {
-    domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com'],
+    domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com', 'picsum.photos'],
     formats: ['image/avif', 'image/webp'],
   },
 
