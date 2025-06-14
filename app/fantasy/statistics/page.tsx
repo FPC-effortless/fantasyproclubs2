@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronLeft, Trophy, Users, Search, Filter } from "lucide-react"
+import { ChevronLeft, Trophy, Users, Search, Filter, BarChart3, HelpCircle, Shirt, Users2 } from "lucide-react"
 import Link from "next/link"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useSupabase } from "@/components/providers/supabase-provider"
 import { Database } from "@/lib/database.types"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
+import { openSignInModal } from '@/components/auth/SignInModal'
 
 interface Competition {
   id: string
@@ -21,7 +23,7 @@ interface Competition {
   fantasy_enabled: boolean
 }
 
-interface FantasyPlayer {
+interface BasePlayer {
   id: string
   user_id: string
   position: string
@@ -30,6 +32,9 @@ interface FantasyPlayer {
   team_id: string
   fantasy_price: number
   fantasy_points: number
+}
+
+interface FantasyPlayer extends BasePlayer {
   user_profile: {
     display_name: string
     username: string
@@ -48,7 +53,41 @@ interface FantasyPlayer {
   }
 }
 
+interface CompetitionTeam {
+  team_id: string
+  name: string
+  short_name: string
+}
+
+interface PlayerMatchStat {
+  player_id: string
+  goals: number
+  assists: number
+  matches_played: number
+  average_rating: number
+}
+
+interface CompetitionTeamWithDetails {
+  team_id: string
+  teams: {
+    id: string
+    name: string
+    short_name: string
+  } | null
+}
+
+type CompetitionTeamResponse = {
+  team_id: string
+  teams: {
+    id: string
+    name: string
+    short_name: string
+  }
+}
+
 export default function FantasyStatisticsPage() {
+  const { supabase } = useSupabase()
+  const [user, setUser] = useState<any>(null)
   const [fantasyCompetitions, setFantasyCompetitions] = useState<Competition[]>([])
   const [selectedCompetition, setSelectedCompetition] = useState<string>("")
   const [allPlayers, setAllPlayers] = useState<FantasyPlayer[]>([])
@@ -58,9 +97,8 @@ export default function FantasyStatisticsPage() {
   const [teamFilter, setTeamFilter] = useState("all")
   const [sortBy, setSortBy] = useState("points")
   const [loading, setLoading] = useState(true)
-  const [competitionTeams, setCompetitionTeams] = useState<any[]>([])
+  const [competitionTeams, setCompetitionTeams] = useState<CompetitionTeam[]>([])
 
-  const supabase = createClientComponentClient<Database>()
   const positions = ['GK', 'RB', 'CB', 'LB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'CF', 'ST']
 
   const loadFantasyCompetitions = useCallback(async () => {
@@ -110,10 +148,17 @@ export default function FantasyStatisticsPage() {
       setLoading(true)
       console.log('👥 Loading players for competition:', competitionId)
 
-      // Get teams in the competition
+      // Get teams in the competition with their details
       const { data: competitionTeams, error: competitionTeamsError } = await supabase
         .from('competition_teams')
-        .select('team_id')
+        .select(`
+          team_id,
+          teams (
+            id,
+            name,
+            short_name
+          )
+        `)
         .eq('competition_id', competitionId)
 
       console.log('🏟️ Competition teams query result:', { 
@@ -133,7 +178,15 @@ export default function FantasyStatisticsPage() {
         return
       }
 
-      const teamIds = competitionTeams.map(ct => ct.team_id)
+      // Transform competition teams data
+      const transformedTeams = (competitionTeams as unknown as CompetitionTeamResponse[]).map(ct => ({
+        team_id: ct.team_id,
+        name: ct.teams.name || 'Unknown',
+        short_name: ct.teams.short_name || 'UNK'
+      }))
+
+      setCompetitionTeams(transformedTeams)
+      const teamIds = transformedTeams.map(ct => ct.team_id)
 
       // Get players from those teams
       const { data: playersData, error: playersError } = await supabase
@@ -174,7 +227,7 @@ export default function FantasyStatisticsPage() {
         const result = await supabase
           .from('user_profiles')
           .select('id, display_name, username, avatar_url')
-          .in('id', playersData.map(p => p.user_id))
+          .in('id', playersData.map((p: BasePlayer) => p.user_id))
         
         if (result.error) {
           // If avatar_url column doesn't exist, try without it
@@ -183,7 +236,7 @@ export default function FantasyStatisticsPage() {
             const fallbackResult = await supabase
               .from('user_profiles')
               .select('id, display_name, username')
-              .in('id', playersData.map(p => p.user_id))
+              .in('id', playersData.map((p: BasePlayer) => p.user_id))
             
             userProfiles = fallbackResult.data || []
             profilesError = fallbackResult.error
@@ -199,123 +252,50 @@ export default function FantasyStatisticsPage() {
         profilesError = error
         userProfiles = []
       }
-      
-      console.log('👤 User profiles query result:', { 
-        userProfiles: userProfiles?.length || 0, 
-        profilesError: profilesError ? {
-          code: profilesError.code,
-          message: profilesError.message,
-          details: profilesError.details,
-          hint: profilesError.hint
-        } : null
-      })
 
-      if (profilesError) {
-        console.error('⚠️ Error loading user profiles:', {
-          code: profilesError.code,
-          message: profilesError.message,
-          details: profilesError.details,
-          hint: profilesError.hint
-        })
-      }
-
-      // Get teams for these players
-      const { data: teamsData, error: teamsDataError } = await supabase
+      // Get team info for these players
+      const { data: teamsData, error: teamsError } = await supabase
         .from('teams')
         .select('id, name, short_name')
-        .in('id', playersData.map(p => p.team_id))
+        .in('id', playersData.map((p: BasePlayer) => p.team_id))
 
-      console.log('🏟️ Teams query result:', { teams: teamsData?.length, teamsDataError })
+      if (teamsError) {
+        console.error('❌ Error loading teams:', teamsError)
+        setAllPlayers([])
+        return
+      }
 
-      // Store competition teams for filtering
-      setCompetitionTeams(teamsData || [])
-
-      // Get fantasy stats for these players
-      const { data: fantasyStats, error: statsError } = await supabase
-        .from('fantasy_player_stats')
-        .select('player_id, fantasy_points, fantasy_price')
-        .in('player_id', playersData.map(p => p.id))
-        .eq('competition_id', competitionId)
-
-      console.log('⚡ Fantasy stats query result:', { fantasyStats: fantasyStats?.length, statsError })
-
-      // Get aggregated match stats
-      const { data: matchStats, error: matchStatsError } = await supabase
+      // Get match stats for these players
+      const { data: matchStatsData, error: matchStatsError } = await supabase
         .from('player_match_stats')
-        .select('player_id, goals, assists, rating, minutes_played')
-        .in('player_id', playersData.map(p => p.id))
-        .eq('competition_id', competitionId)
-        .eq('status', 'approved')
+        .select('player_id, goals, assists, matches_played, average_rating')
+        .in('player_id', playersData.map((p: BasePlayer) => p.id))
 
-      console.log('📊 Match stats query result:', { matchStats: matchStats?.length, matchStatsError })
+      if (matchStatsError) {
+        console.error('❌ Error loading match stats:', matchStatsError)
+      }
 
-      // Aggregate match stats by player
-      const aggregatedStats = matchStats?.reduce((acc, stat) => {
-        if (!acc[stat.player_id]) {
-          acc[stat.player_id] = {
-            goals: 0,
-            assists: 0,
-            matches_played: 0,
-            total_rating: 0,
-            average_rating: 0
-          }
-        }
-        
-        acc[stat.player_id].goals += stat.goals || 0
-        acc[stat.player_id].assists += stat.assists || 0
-        
-        if (stat.minutes_played && stat.minutes_played > 0) {
-          acc[stat.player_id].matches_played += 1
-          if (stat.rating) {
-            acc[stat.player_id].total_rating += stat.rating
-          }
-        }
-        
-        return acc
-      }, {} as Record<string, any>) || {}
+      // Combine all the data
+      const enrichedPlayers = playersData.map((player: BasePlayer) => {
+        const userProfile = userProfiles.find((p: any) => p.id === player.user_id)
+        const team = teamsData?.find((t: any) => t.id === player.team_id)
+        const matchStats = matchStatsData?.find((s: PlayerMatchStat) => s.player_id === player.id)
 
-      // Calculate average ratings
-      Object.keys(aggregatedStats).forEach(playerId => {
-        const stats = aggregatedStats[playerId]
-        if (stats.matches_played > 0) {
-          stats.average_rating = stats.total_rating / stats.matches_played
-        }
-      })
-
-      // Map players with fantasy data and match stats
-      const playersWithFantasy = playersData.map(player => {
-        const userProfile = userProfiles?.find(up => up.id === player.user_id)
-        const team = teamsData?.find(t => t.id === player.team_id)
-        
         return {
           ...player,
-          fantasy_price: fantasyStats?.find(s => s.player_id === player.id)?.fantasy_price || 5.0,
-          fantasy_points: fantasyStats?.find(s => s.player_id === player.id)?.fantasy_points || 0,
-          user_profile: userProfile || {
-            display_name: 'Unknown Player',
-            username: 'unknown',
-            avatar_url: undefined
-          },
-          team: team || {
-            id: player.team_id,
-            name: 'Unknown Team',
-            short_name: 'UNK'
-          },
-          player_match_stats: aggregatedStats[player.id] || {
-            goals: 0,
-            assists: 0,
-            matches_played: 0,
-            average_rating: 0
-          }
-        }
+          user_profile: userProfile || { display_name: 'Unknown', username: 'unknown' },
+          team: team || { id: '', name: 'Unknown', short_name: 'UNK' },
+          player_match_stats: matchStats || { goals: 0, assists: 0, matches_played: 0, average_rating: 0 }
+        } as FantasyPlayer
       })
 
-      console.log('✅ Final players with fantasy data:', playersWithFantasy.length)
-      setAllPlayers(playersWithFantasy)
+      setAllPlayers(enrichedPlayers)
+      setFilteredPlayers(enrichedPlayers)
 
     } catch (error) {
       console.error('💥 Error in loadPlayersForCompetition:', error)
       setAllPlayers([])
+      setFilteredPlayers([])
     } finally {
       setLoading(false)
     }
@@ -381,6 +361,14 @@ export default function FantasyStatisticsPage() {
     filterAndSortPlayers()
   }, [filterAndSortPlayers])
 
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, [supabase]);
+
   const getPositionColor = (position: string) => {
     switch (position) {
       case 'GK': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
@@ -406,169 +394,236 @@ export default function FantasyStatisticsPage() {
     })
   }
 
-  return (
-    <div className="min-h-screen bg-black text-white pb-16">
-      <div className="bg-[#004225] p-4">
-        <div className="flex items-center gap-2">
-          <Link href="/fantasy" className="text-white">
-            <ChevronLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-2xl font-bold">FANTASY PLAYER STATISTICS</h1>
-        </div>
-      </div>
+  // Mock user profile and stats for demo (replace with real data as needed)
+  const userProfile = user
+    ? {
+        avatar_url: user?.user_metadata?.avatar_url || "/placeholder-avatar.svg",
+        name: user?.user_metadata?.display_name || user?.email || "User",
+        role: "Manager",
+      }
+    : {
+        avatar_url: "/placeholder-avatar.svg",
+        name: "Guest",
+        role: "Visitor",
+      };
+  const gameweekStats = {
+    points: 42,
+    rank: 123,
+    transfers: 1,
+    budget: 98.5,
+  };
 
-      <div className="p-4 space-y-6">
-        {/* Filters and Search */}
-        <Card className="bg-[#1E1E1E] border-gray-800">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search players..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-black border-gray-700"
-                />
-              </div>
-              <Select value={positionFilter} onValueChange={setPositionFilter}>
-                <SelectTrigger className="bg-black border-gray-700">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-gray-700">
-                  <SelectItem value="all">All Positions</SelectItem>
-                  <SelectItem value="GK">Goalkeeper</SelectItem>
-                  <SelectItem value="DEF">Defender</SelectItem>
-                  <SelectItem value="MID">Midfielder</SelectItem>
-                  <SelectItem value="FWD">Forward</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={teamFilter} onValueChange={setTeamFilter}>
-                <SelectTrigger className="bg-black border-gray-700">
-                  <Users className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-gray-700">
-                  <SelectItem value="all">All Clubs</SelectItem>
-                  {competitionTeams.map((team) => (
-                    <SelectItem key={team.id} value={team.id}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-black border-gray-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-gray-700">
-                  <SelectItem value="points">Fantasy Points</SelectItem>
-                  <SelectItem value="price">Price</SelectItem>
-                  <SelectItem value="goals">Goals</SelectItem>
-                  <SelectItem value="assists">Assists</SelectItem>
-                  <SelectItem value="rating">Average Rating</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="text-sm text-gray-400 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                {filteredPlayers.length} players found
-              </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900/20 to-gray-900 text-white pb-16">
+      <div className="max-w-3xl mx-auto pt-8 px-4 space-y-8">
+        {/* Header */}
+        <div className="mb-2">
+          <h1 className="text-2xl font-bold text-green-100 tracking-tight mb-1">Statistics</h1>
+          <p className="text-gray-400 text-sm">View detailed player and team statistics</p>
+        </div>
+
+        {/* User Card */}
+        <Card className="p-6 flex items-center gap-4 bg-gradient-to-r from-green-900/30 to-gray-900/40 border-green-800/30">
+          <Avatar className="w-14 h-14">
+            <AvatarImage src={userProfile.avatar_url} alt="avatar" />
+            <AvatarFallback>{userProfile.name[0]}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-lg truncate">{userProfile.name}</div>
+            <div className="text-gray-400 text-sm truncate">{userProfile.role}</div>
+          </div>
+        </Card>
+
+        {/* Gameweek Stats Card */}
+        <Card className="p-4 flex items-center gap-8 bg-gradient-to-r from-green-900/20 to-gray-900/40 border-green-800/30">
+          <div className="flex-1 flex flex-col items-center">
+            <span className="text-xs text-gray-400">Points</span>
+            <span className="text-2xl font-bold text-green-400">{gameweekStats.points}</span>
+          </div>
+          <div className="flex-1 flex flex-col items-center">
+            <span className="text-xs text-gray-400">Rank</span>
+            <span className="text-2xl font-bold text-blue-400">{gameweekStats.rank}</span>
+          </div>
+          <div className="flex-1 flex flex-col items-center">
+            <span className="text-xs text-gray-400">Transfers</span>
+            <span className="text-2xl font-bold text-yellow-400">{gameweekStats.transfers}</span>
+          </div>
+          <div className="flex-1 flex flex-col items-center">
+            <span className="text-xs text-gray-400">Budget</span>
+            <span className="text-2xl font-bold text-green-300">£{gameweekStats.budget}M</span>
+          </div>
+        </Card>
+
+        {/* Notification for unauthenticated users */}
+        {!user && (
+          <div className="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 rounded shadow flex items-center justify-between">
+            <div>
+              <strong>Sign up or sign in</strong> to view detailed statistics and manage your squad!
+            </div>
+            <Button
+              className="ml-4 bg-green-600 hover:bg-green-700 text-white"
+              onClick={openSignInModal}
+            >
+              Sign Up / Sign In
+            </Button>
+          </div>
+        )}
+
+        {/* Filters/Search Card */}
+        <Card className="bg-black/40 border-white/10 backdrop-blur-sm">
+          <CardContent className="p-4 flex flex-wrap gap-4 items-center">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search players..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-black border-gray-700"
+              />
+            </div>
+            <Select value={positionFilter} onValueChange={setPositionFilter}>
+              <SelectTrigger className="bg-black border-gray-700">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black border-gray-700">
+                <SelectItem value="all">All Positions</SelectItem>
+                <SelectItem value="GK">Goalkeeper</SelectItem>
+                <SelectItem value="DEF">Defender</SelectItem>
+                <SelectItem value="MID">Midfielder</SelectItem>
+                <SelectItem value="FWD">Forward</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={teamFilter} onValueChange={setTeamFilter}>
+              <SelectTrigger className="bg-black border-gray-700">
+                <Users className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black border-gray-700">
+                <SelectItem value="all">All Clubs</SelectItem>
+                {competitionTeams.map((team) => (
+                  <SelectItem key={team.team_id} value={team.team_id}>
+                    {team.team_id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="bg-black border-gray-700">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black border-gray-700">
+                <SelectItem value="points">Fantasy Points</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
+                <SelectItem value="goals">Goals</SelectItem>
+                <SelectItem value="assists">Assists</SelectItem>
+                <SelectItem value="rating">Average Rating</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="text-sm text-gray-400 flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              {filteredPlayers.length} players found
             </div>
           </CardContent>
         </Card>
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00ff87]"></div>
-          </div>
-        ) : (
-          <div className="grid gap-4 mt-6">
-            {filteredPlayers.map((player, index) => (
-              <Card key={player.id} className="bg-[#1E1E1E] border-gray-800 hover:border-[#00ff87]/50 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-2xl font-bold text-gray-500">
-                        #{index + 1}
-                      </div>
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={player.user_profile?.avatar_url} />
-                        <AvatarFallback className="bg-[#00ff87] text-black">
-                          {(player.user_profile?.display_name || player.user_profile?.username || 'P')
-                            .split(' ')
-                            .map(n => n[0])
-                            .join('')
-                            .toUpperCase()
-                            .slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold">
-                            {player.user_profile?.display_name || player.user_profile?.username}
-                          </h3>
-                          <Badge className={getPositionColor(player.position)}>
-                            {player.position}
-                          </Badge>
-                          <span className="text-sm text-gray-400">#{player.number}</span>
+
+        {/* Main Statistics Content Card */}
+        <Card className="bg-black/40 border-white/10 backdrop-blur-sm">
+          <CardContent className="p-4">
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00ff87]"></div>
+              </div>
+            ) : (
+              <div className="grid gap-4 mt-6">
+                {filteredPlayers.map((player, index) => (
+                  <Card key={player.id} className="bg-[#1E1E1E] border-gray-800 hover:border-[#00ff87]/50 transition-colors">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="text-2xl font-bold text-gray-500">
+                            #{index + 1}
+                          </div>
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={player.user_profile?.avatar_url} />
+                            <AvatarFallback className="bg-[#00ff87] text-black">
+                              {(player.user_profile?.display_name || player.user_profile?.username || 'P')
+                                .split(' ')
+                                .map(n => n[0])
+                                .join('')
+                                .toUpperCase()
+                                .slice(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold">
+                                {player.user_profile?.display_name || player.user_profile?.username}
+                              </h3>
+                              <Badge className={getPositionColor(player.position)}>
+                                {player.position}
+                              </Badge>
+                              <span className="text-sm text-gray-400">#{player.number}</span>
+                            </div>
+                            <p className="text-sm text-gray-400">
+                              {player.team?.name}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-400">
-                          {player.team?.name}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-                      <div>
-                        <div className="text-xl font-bold text-[#00ff87]">
-                          {player.fantasy_points?.toFixed(1) || '0.0'}
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                          <div>
+                            <div className="text-xl font-bold text-[#00ff87]">
+                              {player.fantasy_points?.toFixed(1) || '0.0'}
+                            </div>
+                            <div className="text-xs text-gray-400">Points</div>
+                          </div>
+                          <div>
+                            <div className="text-xl font-bold text-blue-400">
+                              ${player.fantasy_price?.toFixed(1) || '5.0'}M
+                            </div>
+                            <div className="text-xs text-gray-400">Price</div>
+                          </div>
+                          <div>
+                            <div className="text-xl font-bold text-yellow-400">
+                              {player.player_match_stats?.goals || 0}
+                            </div>
+                            <div className="text-xs text-gray-400">Goals</div>
+                          </div>
+                          <div>
+                            <div className="text-xl font-bold text-purple-400">
+                              {player.player_match_stats?.assists || 0}
+                            </div>
+                            <div className="text-xs text-gray-400">Assists</div>
+                          </div>
+                          <div>
+                            <div className="text-xl font-bold text-orange-400">
+                              {player.player_match_stats?.average_rating?.toFixed(1) || '0.0'}
+                            </div>
+                            <div className="text-xs text-gray-400">Rating</div>
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-400">Points</div>
                       </div>
-                      <div>
-                        <div className="text-xl font-bold text-blue-400">
-                          ${player.fantasy_price?.toFixed(1) || '5.0'}M
-                        </div>
-                        <div className="text-xs text-gray-400">Price</div>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold text-yellow-400">
-                          {player.player_match_stats?.goals || 0}
-                        </div>
-                        <div className="text-xs text-gray-400">Goals</div>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold text-purple-400">
-                          {player.player_match_stats?.assists || 0}
-                        </div>
-                        <div className="text-xs text-gray-400">Assists</div>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold text-orange-400">
-                          {player.player_match_stats?.average_rating?.toFixed(1) || '0.0'}
-                        </div>
-                        <div className="text-xs text-gray-400">Rating</div>
-                      </div>
-                    </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {fantasyCompetitions.length === 0 && !loading && (
+              <Card className="bg-[#1E1E1E] border-gray-800">
+                <CardContent className="pt-6 text-center">
+                  <div className="text-gray-400 mb-4">
+                    <Trophy className="w-12 h-12 mx-auto mb-2" />
+                    <p>No fantasy-enabled competitions found.</p>
+                    <p className="text-sm mt-2">
+                      Contact an admin to enable fantasy mode for competitions.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
-
-        {fantasyCompetitions.length === 0 && !loading && (
-          <Card className="bg-[#1E1E1E] border-gray-800">
-            <CardContent className="pt-6 text-center">
-              <div className="text-gray-400 mb-4">
-                <Trophy className="w-12 h-12 mx-auto mb-2" />
-                <p>No fantasy-enabled competitions found.</p>
-                <p className="text-sm mt-2">
-                  Contact an admin to enable fantasy mode for competitions.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
