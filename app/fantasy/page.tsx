@@ -6,7 +6,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ChevronRight, Shirt, Users2, BarChart3, HelpCircle } from "lucide-react"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function FantasyPage() {
@@ -25,7 +24,6 @@ export default function FantasyPage() {
   ])
 
   useEffect(() => {
-    // Simulate loading and fetch user profile/stats
     setTimeout(() => {
       setUserProfile({
         name: "Eddysongram",
@@ -49,108 +47,103 @@ export default function FantasyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pb-8">
-      {/* Patterned Header */}
-      <div className="relative w-full h-48 rounded-b-3xl overflow-hidden flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #085b2a 60%, #0e4429 100%)' }}>
-        <Image src="/pattern.svg" alt="pattern" fill className="object-cover object-center opacity-40" />
-        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-          <h1 className="text-2xl font-bold tracking-wide text-white mt-4 mb-2 drop-shadow-lg">FANTASY</h1>
-          <div className="flex flex-col items-center mt-2">
-            <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
-              <Image src={userProfile.avatar_url} alt="avatar" width={80} height={80} className="object-cover w-full h-full" />
-            </div>
-            <span className="mt-2 text-lg font-semibold text-white">{userProfile.name}</span>
-            <span className="mt-1 px-3 py-1 bg-white/10 text-xs rounded-lg border border-white/20 text-white">Manager</span>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900/60 to-black/90 pb-8">
+      <div className="max-w-3xl mx-auto pt-8 px-4 space-y-8">
+        {/* Header */}
+        <div className="mb-2">
+          <h1 className="text-2xl font-bold text-green-100 tracking-tight mb-1">Fantasy</h1>
+          <p className="text-gray-400 text-sm">Manage your fantasy team, transfers, and stats</p>
         </div>
-      </div>
 
-      {/* Gameweek Stats */}
-      <div className="mt-6 flex flex-col items-center">
-        <span className="text-lg font-semibold">Gameweek {gameweek}</span>
-        <div className="w-full flex justify-center mt-2">
-          <div className="grid grid-cols-3 gap-4 w-full max-w-xs">
-            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
-              <span className="text-2xl font-bold">{stats.totw}</span>
-              <span className="text-xs text-green-200 mt-1">TOTW</span>
+        {/* User Card */}
+        <Card className="p-6 flex items-center gap-4 bg-gradient-to-r from-green-900/30 to-gray-900/40 border-green-800/30">
+          <Image
+            src={userProfile.avatar_url}
+            alt="avatar"
+            width={56}
+            height={56}
+            className="rounded-full border"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-lg truncate">{userProfile.name}</div>
+            <div className="text-gray-400 text-sm truncate">{userProfile.role}</div>
+          </div>
+        </Card>
+
+        {/* Gameweek Stats Card */}
+        <Card className="p-4 bg-gradient-to-r from-gray-800/40 to-gray-900/40 border-gray-700/30">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex flex-col items-center md:items-start">
+              <span className="text-lg font-semibold text-green-100">Gameweek {gameweek}</span>
+              <div className="flex gap-4 mt-2">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-green-200">{stats.totw}</span>
+                  <span className="text-xs text-green-300 mt-1">TOTW</span>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-green-200">{stats.points}</span>
+                  <span className="text-xs text-green-300 mt-1">Points</span>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-green-200">{stats.highest}</span>
+                  <span className="text-xs text-green-300 mt-1">Highest</span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
-              <span className="text-2xl font-bold">{stats.points}</span>
-              <span className="text-xs text-green-200 mt-1">Points</span>
-            </div>
-            <div className="flex flex-col items-center justify-center bg-[#14532d] rounded-xl py-3">
-              <span className="text-2xl font-bold">{stats.highest}</span>
-              <span className="text-xs text-green-200 mt-1">Highest</span>
+            <div className="flex flex-col items-center md:items-end">
+              <span className="text-base font-semibold text-green-100">Gameweek {nextGameweek}</span>
+              <span className="text-xs text-gray-300 font-semibold mt-1">DEADLINE {deadline}</span>
             </div>
           </div>
+        </Card>
+
+        {/* Main Navigation Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <SectionNavCard href="/fantasy/team" icon={Shirt} label="My Team" />
+          <SectionNavCard href="/fantasy/transfers" icon={Users2} label="Transfers" />
+          <SectionNavCard href="/fantasy/statistics" icon={BarChart3} label="Statistics" />
+          <SectionNavCard href="/fantasy/help" icon={HelpCircle} label="Help & Rules" />
         </div>
-      </div>
 
-      {/* Gameweek & Deadline */}
-      <div className="flex justify-between items-center mt-8 px-6">
-        <span className="text-base font-semibold">Gameweek {nextGameweek}</span>
-        <span className="text-xs text-gray-300 font-semibold">DEADLINE {deadline}</span>
-      </div>
-
-      {/* Main Navigation Cards */}
-      <div className="grid grid-cols-2 gap-4 mt-4 px-4">
-        <Link href="/fantasy/team">
-          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
-            <Shirt className="w-10 h-10 text-green-400 mb-2" />
-            <span className="font-semibold text-white">My Team</span>
-          </Card>
-        </Link>
-        <Link href="/fantasy/transfers">
-          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
-            <Users2 className="w-10 h-10 text-green-400 mb-2" />
-            <span className="font-semibold text-white">Transfers</span>
-          </Card>
-        </Link>
-        <Link href="/fantasy/statistics">
-          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
-            <BarChart3 className="w-10 h-10 text-green-400 mb-2" />
-            <span className="font-semibold text-white">Statistics</span>
-          </Card>
-        </Link>
-        <Link href="/fantasy/help">
-          <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive">
-            <HelpCircle className="w-10 h-10 text-green-400 mb-2" />
-            <span className="font-semibold text-white">Help & Rules</span>
-          </Card>
-        </Link>
-      </div>
-
-      {/* League/Club Toggle */}
-      <div className="flex justify-center mt-8">
-        <button className="bg-green-800 text-white font-semibold px-8 py-2 rounded-full focus:outline-none">League</button>
-        <button className="ml-4 bg-transparent text-white font-semibold px-8 py-2 rounded-full border border-green-800 focus:outline-none">Club</button>
-      </div>
-
-      {/* Standings Table */}
-      <div className="mt-4 px-2">
-        <div className="bg-green-900 rounded-t-xl flex px-4 py-2 text-green-100 text-xs font-semibold">
-          <div className="w-8">Pos</div>
-          <div className="flex-1">Team</div>
-          <div className="w-12 text-right">GW{gameweek}</div>
-          <div className="w-12 text-right">Total</div>
-        </div>
-        {standings.map((row) => (
-          <div key={row.pos} className="flex items-center px-4 py-2 border-b border-green-900 text-white text-sm">
-            <div className="w-8">{row.pos}</div>
-            <div className="flex-1 flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-400" />
-              {row.team}
-            </div>
-            <div className="w-12 text-right">{row.gw}</div>
-            <div className="w-12 text-right">{row.total}</div>
+        {/* Standings Card */}
+        <Card className="p-0 bg-gradient-to-r from-green-900/20 to-gray-900/40 border-green-800/30">
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <span className="text-lg font-semibold text-green-100">Standings</span>
+            <Button variant="ghost" size="sm" className="text-green-400" asChild>
+              <Link href="/fantasy/standings">View All</Link>
+            </Button>
           </div>
-        ))}
-      </div>
-
-      {/* View All Button */}
-      <div className="flex justify-center mt-6">
-        <Button className="w-full max-w-xs bg-green-800 hover:bg-green-700 text-white rounded-xl py-3 text-base font-semibold">View All</Button>
+          <div className="bg-green-900 rounded-t-xl flex px-4 py-2 text-green-100 text-xs font-semibold">
+            <div className="w-8">Pos</div>
+            <div className="flex-1">Team</div>
+            <div className="w-12 text-right">GW{gameweek}</div>
+            <div className="w-12 text-right">Total</div>
+          </div>
+          {standings.map((row) => (
+            <div key={row.pos} className="flex items-center px-4 py-2 border-b border-green-900 text-white text-sm">
+              <div className="w-8">{row.pos}</div>
+              <div className="flex-1 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-400" />
+                {row.team}
+              </div>
+              <div className="w-12 text-right">{row.gw}</div>
+              <div className="w-12 text-right">{row.total}</div>
+            </div>
+          ))}
+        </Card>
       </div>
     </div>
+  )
+}
+
+function SectionNavCard({ href, icon: Icon, label }: { href: string, icon: any, label: string }) {
+  return (
+    <Link href={href} className="group">
+      <Card className="flex flex-col items-center justify-center py-6 bg-[#1a3a24] rounded-xl shadow card-interactive group-hover:border-green-500 transition-all">
+        <Icon className="w-10 h-10 text-green-400 mb-2 group-hover:text-green-300" />
+        <span className="font-semibold text-white group-hover:text-green-200">{label}</span>
+        <ChevronRight className="w-4 h-4 text-green-400 mt-2 group-hover:text-green-300" />
+      </Card>
+    </Link>
   )
 }

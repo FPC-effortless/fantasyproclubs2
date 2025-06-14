@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -32,16 +32,7 @@ export default function CompetitionClubsPage() {
 
   const seasons = ['2024/25', '2023/24', '2022/23']
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true)
-      await Promise.all([loadCompetitions(), loadAllTeams()])
-      setLoading(false)
-    }
-    loadData()
-  }, [])
-
-  const loadCompetitions = async () => {
+  const loadCompetitions = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('competitions')
@@ -52,9 +43,9 @@ export default function CompetitionClubsPage() {
     } catch (error: any) {
       toast({ title: "Error loading competitions", description: error.message, variant: "destructive" })
     }
-  }
+  }, [supabase, toast]);
 
-  const loadAllTeams = async () => {
+  const loadAllTeams = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('teams')
@@ -74,7 +65,16 @@ export default function CompetitionClubsPage() {
     } catch (error: any) {
       toast({ title: "Error loading teams", description: error.message, variant: "destructive" })
     }
-  }
+  }, [supabase, toast]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      await Promise.all([loadCompetitions(), loadAllTeams()])
+      setLoading(false)
+    }
+    loadData()
+  }, [loadCompetitions, loadAllTeams])
 
   const filteredTeams = teams.filter(team => {
     const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase())

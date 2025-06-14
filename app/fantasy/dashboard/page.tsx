@@ -9,9 +9,11 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database'
 import { Skeleton } from "@/components/ui/skeleton"
+import { openSignInModal } from '@/components/auth/SignInModal'
+import { useRouter } from 'next/navigation'
 
 interface FantasyTeam {
   id: string
@@ -68,8 +70,9 @@ export default function FantasyDashboardPage() {
   const [currentGameweek, setCurrentGameweek] = useState(1)
   const [selectedGameweek, setSelectedGameweek] = useState(1)
   const [user, setUser] = useState<any>(null)
+  const router = useRouter()
 
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     loadUserAndFantasyData()
@@ -452,10 +455,17 @@ export default function FantasyDashboardPage() {
           <h2 className="text-2xl font-bold mb-4">No Fantasy Team Found</h2>
           <p className="text-gray-300 mb-6">You need a fantasy team to view the dashboard. Create one to get started!</p>
           <Button 
-            asChild
+            asChild={false}
+            onClick={() => {
+              if (!user) {
+                openSignInModal();
+                return;
+              }
+              router.push('/fantasy');
+            }}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
-            <Link href="/fantasy">Create Fantasy Team</Link>
+            Create Fantasy Team
           </Button>
         </div>
       </div>
@@ -601,7 +611,15 @@ export default function FantasyDashboardPage() {
                     </div>
                     <div className="text-right">
                       <div className="text-white font-bold">£{suggestion.price}M</div>
-                      <Button size="sm" className="mt-1 bg-green-600 hover:bg-green-700 text-white">
+                      <Button size="sm" className="mt-1 bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => {
+                          if (!user) {
+                            openSignInModal();
+                            return;
+                          }
+                          // actual add transfer logic
+                        }}
+                      >
                         <Plus className="w-3 h-3" />
                       </Button>
                     </div>

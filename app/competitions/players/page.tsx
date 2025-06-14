@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Search, Users } from 'lucide-react'
@@ -44,11 +44,7 @@ export default function CompetitionPlayersPage() {
   const positions = ['GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'CDM', 'CM', 'CAM', 'LM', 'RM', 'LW', 'RW', 'CF', 'ST']
   const seasons = ['2024/25', '2023/24', '2022/23', '2021/22', '2020/21']
 
-  useEffect(() => {
-    loadAllData()
-  }, [])
-
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async () => {
     try {
       setLoading(true)
       console.log('Loading all players and teams...')
@@ -153,7 +149,11 @@ export default function CompetitionPlayersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, toast]);
+
+  useEffect(() => {
+    loadAllData()
+  }, [loadAllData])
 
   const filteredPlayers = players.filter(player => {
     const matchesSearch = 

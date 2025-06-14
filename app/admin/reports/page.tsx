@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from '@/lib/supabase/server'
 import { toast } from "@/hooks/use-toast"
 import {
   BarChart,
@@ -39,6 +39,7 @@ import {
   Pie,
   Cell,
 } from "recharts"
+import { SupabaseClient } from "@supabase/supabase-js"
 
 interface ReportsData {
   overview: {
@@ -85,11 +86,18 @@ const getColorClass = (index: number) => {
 }
 
 export default function ReportsPage() {
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [data, setData] = useState<ReportsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  const [error, setError] = useState<string | null>(null)
+
+  // Initialize Supabase client on mount
+  useEffect(() => {
+    createClient().then(client => setSupabase(client));
+  }, []);
 
   const fetchReportsData = useCallback(async () => {
+    if (!supabase) return;
     try {
       setIsLoading(true)
 
@@ -290,8 +298,10 @@ export default function ReportsPage() {
   }, [supabase])
 
   useEffect(() => {
-    fetchReportsData()
-  }, [fetchReportsData])
+    if (supabase) {
+      fetchReportsData();
+    }
+  }, [supabase, fetchReportsData]);
 
   const handleExport = () => {
     toast({

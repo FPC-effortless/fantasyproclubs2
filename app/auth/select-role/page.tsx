@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -68,12 +68,7 @@ export default function SelectRolePage() {
   const [isLoading, setIsLoading] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => {
-    // Check if user is in the signup flow
-    checkSignupFlow()
-  }, [])
-
-  const checkSignupFlow = async () => {
+  const checkSignupFlow = useCallback(async () => {
     const tempUserId = searchParams.get('userId')
     if (!tempUserId) {
       toast({
@@ -84,18 +79,19 @@ export default function SelectRolePage() {
       router.push('/login')
       return
     }
-
-    // Optional: Attempt to verify session, but don't block flow if not signed in
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      // If session mismatch we simply continue; profile updates rely on RLS rules
       if (user && user.id !== tempUserId) {
         console.warn('Session user mismatch, continuing without auth session')
       }
     } catch (err) {
       console.warn('No active session, proceeding anonymously')
     }
-  }
+  }, [router, searchParams, supabase])
+
+  useEffect(() => {
+    checkSignupFlow()
+  }, [checkSignupFlow])
 
   const handleRoleSelection = async () => {
     if (!selectedRole) {

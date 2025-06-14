@@ -79,8 +79,7 @@ export default function StatisticsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalStat, setModalStat] = useState<{ title: string, stats: PlayerStat[] | TeamStat[] | MVPStat[], type: string, icon: any } | null>(null)
 
-  // Load real player statistics from database
-  const loadPlayerStatistics = async (competitionId: string, season: string) => {
+  const loadPlayerStatistics = useCallback(async (competitionId: string, season: string) => {
     try {
       // Get all players from teams in this competition
       const { data: competitionTeams } = await supabase
@@ -255,13 +254,12 @@ export default function StatisticsPage() {
           games_played: stat.gamesPlayed
         }))
 
-      // Process MVP players (highest average rating)
+      // Process MVP ratings
       const mvpMap = new Map<string, {
         player: any,
         team: any,
         totalRating: number,
-        ratedMatches: number,
-        averageRating: number
+        gamesPlayed: number
       }>()
 
       ratingsData?.forEach(stat => {
@@ -271,28 +269,25 @@ export default function StatisticsPage() {
             player: stat.players,
             team: stat.teams,
             totalRating: 0,
-            ratedMatches: 0,
-            averageRating: 0
+            gamesPlayed: 0
           })
         }
         const existing = mvpMap.get(key)!
         existing.totalRating += stat.rating
-        existing.ratedMatches += 1
-        existing.averageRating = existing.totalRating / existing.ratedMatches
+        existing.gamesPlayed += 1
       })
 
       const mvpPlayers = Array.from(mvpMap.values())
-        .filter(stat => stat.ratedMatches >= 3) // Minimum 3 rated matches to qualify
-        .sort((a, b) => b.averageRating - a.averageRating)
-        .slice(0, 10)
         .map(stat => ({
           id: stat.player.id,
           name: stat.player.name,
           team: stat.team.name,
-          value: parseFloat(stat.averageRating.toFixed(2)), // Show average rating as value
-          games_played: stat.ratedMatches,
-          rating: stat.averageRating
+          value: stat.totalRating / stat.gamesPlayed,
+          games_played: stat.gamesPlayed,
+          rating: stat.totalRating / stat.gamesPlayed
         }))
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10)
 
       return {
         goalScorers,
@@ -300,9 +295,13 @@ export default function StatisticsPage() {
         cleanSheets,
         mvpPlayers
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading player statistics:', error)
+      toast({
+        title: "Error loading player statistics",
+        description: error.message,
+        variant: "destructive",
+      })
       return {
         goalScorers: [],
         assistProviders: [],
@@ -310,24 +309,17 @@ export default function StatisticsPage() {
         mvpPlayers: []
       }
     }
-  }
+  }, [supabase, toast]);
 
-  // Load real team statistics from database
-  const loadTeamStatistics = async (competitionId: string, season: string) => {
+  const loadTeamStatistics = useCallback(async (competitionId: string, season: string) => {
     try {
-      // Get all matches for this competition
-      const { data: matches } = await supabase
-        .from('matches')
-        .select(`
-          id, home_team_id, away_team_id, home_score, away_score, status,
-          home_team:teams!matches_home_team_id_fkey(id, name),
-          away_team:teams!matches_away_team_id_fkey(id, name)
-        `)
+      // Get all teams in this competition
+      const { data: competitionTeams } = await supabase
+        .from('competition_teams')
+        .select('team_id')
         .eq('competition_id', competitionId)
-        .eq('status', 'completed')
-        .eq('season', season)
 
-      if (!matches || matches.length === 0) {
+      if (!competitionTeams || competitionTeams.length === 0) {
         return {
           topScorers: [],
           bestDefense: [],
@@ -335,139 +327,161 @@ export default function StatisticsPage() {
         }
       }
 
-      // Calculate team statistics
-      const teamStatsMap = new Map<string, {
+      const teamIds = competitionTeams.map(ct => ct.team_id)
+
+      // Get team goals scored
+      const { data: goalsData } = await supabase
+        .from('team_match_stats')
+        .select(`
+          team_id,
+          goals_scored,
+          teams!inner(id, name)
+        `)
+        .in('team_id', teamIds)
+        .eq('season', season)
+
+      // Get team goals conceded
+      const { data: defenseData } = await supabase
+        .from('team_match_stats')
+        .select(`
+          team_id,
+          goals_conceded,
+          teams!inner(id, name)
+        `)
+        .in('team_id', teamIds)
+        .eq('season', season)
+
+      // Get team form (last 5 matches)
+      const { data: formData } = await supabase
+        .from('team_match_stats')
+        .select(`
+          team_id,
+          result,
+          teams!inner(id, name)
+        `)
+        .in('team_id', teamIds)
+        .eq('season', season)
+        .order('match_date', { ascending: false })
+        .limit(5)
+
+      // Process goals scored
+      const goalsMap = new Map<string, {
         team: any,
-        goalsFor: number,
-        goalsAgainst: number,
-        gamesPlayed: number,
+        totalGoals: number,
+        gamesPlayed: number
+      }>()
+
+      goalsData?.forEach(stat => {
+        const key = stat.team_id
+        if (!goalsMap.has(key)) {
+          goalsMap.set(key, {
+            team: stat.teams,
+            totalGoals: 0,
+            gamesPlayed: 0
+          })
+        }
+        const existing = goalsMap.get(key)!
+        existing.totalGoals += stat.goals_scored
+        existing.gamesPlayed += 1
+      })
+
+      const topScorers = Array.from(goalsMap.values())
+        .sort((a, b) => b.totalGoals - a.totalGoals)
+        .slice(0, 10)
+        .map(stat => ({
+          id: stat.team.id,
+          name: stat.team.name,
+          value: stat.totalGoals,
+          games_played: stat.gamesPlayed
+        }))
+
+      // Process goals conceded
+      const defenseMap = new Map<string, {
+        team: any,
+        totalConceded: number,
+        gamesPlayed: number
+      }>()
+
+      defenseData?.forEach(stat => {
+        const key = stat.team_id
+        if (!defenseMap.has(key)) {
+          defenseMap.set(key, {
+            team: stat.teams,
+            totalConceded: 0,
+            gamesPlayed: 0
+          })
+        }
+        const existing = defenseMap.get(key)!
+        existing.totalConceded += stat.goals_conceded
+        existing.gamesPlayed += 1
+      })
+
+      const bestDefense = Array.from(defenseMap.values())
+        .sort((a, b) => a.totalConceded - b.totalConceded)
+        .slice(0, 10)
+        .map(stat => ({
+          id: stat.team.id,
+          name: stat.team.name,
+          value: stat.totalConceded,
+          games_played: stat.gamesPlayed
+        }))
+
+      // Process form
+      const formMap = new Map<string, {
+        team: any,
         wins: number,
         draws: number,
         losses: number,
-        recentForm: string[]
+        gamesPlayed: number
       }>()
 
-      matches.forEach(match => {
-        if (match.home_score !== null && match.away_score !== null) {
-          // Initialize home team stats
-          if (!teamStatsMap.has(match.home_team_id)) {
-            teamStatsMap.set(match.home_team_id, {
-              team: match.home_team,
-              goalsFor: 0,
-              goalsAgainst: 0,
-              gamesPlayed: 0,
-              wins: 0,
-              draws: 0,
-              losses: 0,
-              recentForm: []
-            })
-          }
-
-          // Initialize away team stats
-          if (!teamStatsMap.has(match.away_team_id)) {
-            teamStatsMap.set(match.away_team_id, {
-              team: match.away_team,
-              goalsFor: 0,
-              goalsAgainst: 0,
-              gamesPlayed: 0,
-              wins: 0,
-              draws: 0,
-              losses: 0,
-              recentForm: []
-            })
-          }
-
-          const homeStats = teamStatsMap.get(match.home_team_id)!
-          const awayStats = teamStatsMap.get(match.away_team_id)!
-
-          // Update goals and games played
-          homeStats.goalsFor += match.home_score
-          homeStats.goalsAgainst += match.away_score
-          homeStats.gamesPlayed += 1
-
-          awayStats.goalsFor += match.away_score
-          awayStats.goalsAgainst += match.home_score
-          awayStats.gamesPlayed += 1
-
-          // Update wins/draws/losses and form
-          if (match.home_score > match.away_score) {
-            homeStats.wins += 1
-            awayStats.losses += 1
-            homeStats.recentForm.unshift('W')
-            awayStats.recentForm.unshift('L')
-          } else if (match.home_score < match.away_score) {
-            awayStats.wins += 1
-            homeStats.losses += 1
-            awayStats.recentForm.unshift('W')
-            homeStats.recentForm.unshift('L')
-          } else {
-            homeStats.draws += 1
-            awayStats.draws += 1
-            homeStats.recentForm.unshift('D')
-            awayStats.recentForm.unshift('D')
-          }
-
-          // Keep only last 5 results
-          if (homeStats.recentForm.length > 5) homeStats.recentForm.pop()
-          if (awayStats.recentForm.length > 5) awayStats.recentForm.pop()
+      formData?.forEach(stat => {
+        const key = stat.team_id
+        if (!formMap.has(key)) {
+          formMap.set(key, {
+            team: stat.teams,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            gamesPlayed: 0
+          })
         }
+        const existing = formMap.get(key)!
+        if (stat.result === 'W') existing.wins++
+        else if (stat.result === 'D') existing.draws++
+        else if (stat.result === 'L') existing.losses++
+        existing.gamesPlayed++
       })
 
-      const teamStats = Array.from(teamStatsMap.values())
-
-      // Top scoring teams
-      const topScorers = teamStats
-        .sort((a, b) => b.goalsFor - a.goalsFor)
-        .slice(0, 10)
+      const bestForm = Array.from(formMap.values())
         .map(stat => ({
           id: stat.team.id,
           name: stat.team.name,
-          value: stat.goalsFor,
+          value: (stat.wins * 3 + stat.draws) / stat.gamesPlayed,
           games_played: stat.gamesPlayed
         }))
-
-      // Best defensive teams (fewest goals conceded)
-      const bestDefense = teamStats
-        .sort((a, b) => a.goalsAgainst - b.goalsAgainst)
+        .sort((a, b) => b.value - a.value)
         .slice(0, 10)
-        .map(stat => ({
-          id: stat.team.id,
-          name: stat.team.name,
-          value: stat.goalsAgainst,
-          games_played: stat.gamesPlayed
-        }))
-
-      // Best form teams (most wins in recent games)
-      const bestForm = teamStats
-        .sort((a, b) => {
-          const aWinRate = a.recentForm.filter(r => r === 'W').length
-          const bWinRate = b.recentForm.filter(r => r === 'W').length
-          return bWinRate - aWinRate
-        })
-        .slice(0, 10)
-        .map(stat => ({
-          id: stat.team.id,
-          name: stat.team.name,
-          value: stat.recentForm.filter(r => r === 'W').length,
-          games_played: stat.gamesPlayed,
-          form: stat.recentForm
-        }))
 
       return {
         topScorers,
         bestDefense,
         bestForm
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading team statistics:', error)
+      toast({
+        title: "Error loading team statistics",
+        description: error.message,
+        variant: "destructive",
+      })
       return {
         topScorers: [],
         bestDefense: [],
         bestForm: []
       }
     }
-  }
+  }, [supabase, toast]);
 
   const loadStatisticsData = useCallback(async () => {
     try {
@@ -522,21 +536,14 @@ export default function StatisticsPage() {
     } finally {
       setLoading(false)
     }
-  }, [supabase, competitionId, selectedSeason])
+  }, [supabase, competitionId, selectedSeason, loadPlayerStatistics, loadTeamStatistics])
 
   useEffect(() => {
     if (competitionId) {
-      setLoading(true)
-      Promise.all([
-        loadPlayerStatistics(competitionId, selectedSeason),
-        loadTeamStatistics(competitionId, selectedSeason),
-      ]).then(([playerStats, teamStats]) => {
-        setPlayerStats(playerStats)
-        setTeamStats(teamStats)
-        setLoading(false)
-      })
+      loadPlayerStatistics(competitionId, selectedSeason)
+      loadTeamStatistics(competitionId, selectedSeason)
     }
-  }, [competitionId, selectedSeason])
+  }, [competitionId, selectedSeason, loadPlayerStatistics, loadTeamStatistics])
 
   // Enhanced Stat Card Component
   const StatCard = ({ icon: Icon, title, stats, type }: { 

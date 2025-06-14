@@ -4,7 +4,7 @@ import type React from "react"
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { Home, Trophy, User, Wand2 } from "lucide-react"
+import { Home, Trophy, User, Wand2, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
@@ -36,9 +36,9 @@ const navigationItems: NavigationItem[] = [
     href: "/fantasy",
   },
   {
-    id: "profile",
-    label: "Profile",
-    icon: User,
+    id: "more",
+    label: "More",
+    icon: MoreHorizontal,
     href: "/profile",
   },
 ]

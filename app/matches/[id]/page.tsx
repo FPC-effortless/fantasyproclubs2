@@ -15,6 +15,7 @@ import { MatchStatistics } from '@/components/match/match-statistics'
 import { MatchTable } from '@/components/match/match-table'
 import { MatchLineup } from '@/components/match/match-lineup'
 import { StreamModal } from '@/components/match/stream-modal'
+import Image from "next/image"
 
 interface Match {
   id: string
@@ -454,7 +455,13 @@ export default function MatchDetailsPage() {
                   </div>
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg group-hover:ring-4 group-hover:ring-green-400/30 transition-all">
                     {match.home_team.logo_url ? (
-                      <img src={match.home_team.logo_url} alt={match.home_team.name} className="w-16 h-16 object-contain" />
+                      <Image
+                        src={match.home_team.logo_url}
+                        alt={match.home_team.name}
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 object-contain"
+                      />
                     ) : (
                       match.home_team.name.charAt(0)
                     )}
@@ -485,7 +492,13 @@ export default function MatchDetailsPage() {
                 <Link href={`/teams/${match.away_team.id}`} className="flex items-center gap-4 group">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg group-hover:ring-4 group-hover:ring-blue-400/30 transition-all">
                     {match.away_team.logo_url ? (
-                      <img src={match.away_team.logo_url} alt={match.away_team.name} className="w-16 h-16 object-contain" />
+                      <Image
+                        src={match.away_team.logo_url}
+                        alt={match.away_team.name}
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 object-contain"
+                      />
                     ) : (
                       match.away_team.name.charAt(0)
                     )}

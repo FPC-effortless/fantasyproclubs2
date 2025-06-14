@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -28,12 +28,7 @@ export default function SelectTeamPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const supabase = createClient()
 
-  useEffect(() => {
-    checkSignupFlow()
-    fetchTeams()
-  }, [])
-
-  const checkSignupFlow = async () => {
+  const checkSignupFlow = useCallback(async () => {
     const tempUserId = searchParams.get('userId')
     const role = searchParams.get('role')
     
@@ -56,9 +51,9 @@ export default function SelectTeamPage() {
     } catch (err) {
       console.warn('No active session in team selection')
     }
-  }
+  }, [router, searchParams, supabase])
 
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const res = await fetch('/api/public/teams')
       const json = await res.json()
@@ -74,7 +69,12 @@ export default function SelectTeamPage() {
         variant: "destructive",
       })
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    checkSignupFlow()
+    fetchTeams()
+  }, [checkSignupFlow, fetchTeams])
 
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(searchQuery.toLowerCase())

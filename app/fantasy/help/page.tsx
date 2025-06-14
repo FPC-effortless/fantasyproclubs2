@@ -58,7 +58,7 @@ export default function HelpPage() {
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 max-w-2xl mx-auto">
         {/* Welcome Message */}
         <Card className="bg-gradient-to-r from-green-900/30 to-green-800/20 border-green-700/30">
           <CardContent className="p-6">
@@ -67,7 +67,7 @@ export default function HelpPage() {
               <h2 className="text-xl font-bold text-green-100">Welcome to Fantasy Pro Clubs!</h2>
             </div>
             <p className="text-green-200/80 leading-relaxed">
-                             Here&apos;s everything you need to know about managing your team and competing with other managers. 
+              Here&apos;s everything you need to know about managing your team and competing with other managers. 
               Master these rules to climb the leaderboards and become the ultimate fantasy manager!
             </p>
           </CardContent>
@@ -79,7 +79,6 @@ export default function HelpPage() {
             <Book className="w-5 h-5" />
             Game Rules
           </h2>
-          
           {rules.map((rule, index) => (
             <Card key={index} className="bg-black/40 border-white/10 backdrop-blur-sm hover:border-green-500/30 transition-all duration-300">
               <CardHeader className="pb-3">
@@ -101,7 +100,6 @@ export default function HelpPage() {
             <Target className="w-5 h-5" />
             Scoring System
           </h2>
-          
           <Card className="bg-black/40 border-white/10 backdrop-blur-sm">
             <CardContent className="p-4">
               <div className="grid gap-3">

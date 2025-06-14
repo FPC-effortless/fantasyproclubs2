@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { type User, type Session } from "@supabase/supabase-js"
 import { getSupabaseClient } from "@/lib/supabase"
 import { toast } from "@/hooks/use-toast"
@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
   
   // Use the singleton client
   const supabase = useMemo(() => getSupabaseClient(), [])
@@ -53,8 +54,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .maybeSingle()
 
           if (profileError && status !== 406) {
-            // If 406 (no row), continue without role-based redirect
             throw profileError
+          }
+
+          // Check for redirect param
+          const redirectTo = searchParams.get('redirect')
+          if (redirectTo) {
+            router.push(redirectTo)
+            return
           }
 
           if (profile?.user_type === 'admin') {
@@ -69,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase, router])
+  }, [supabase, router, searchParams])
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -89,8 +96,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .maybeSingle()
 
         if (profileError && status !== 406) {
-          // If 406 (no row), continue without role-based redirect
           throw profileError
+        }
+
+        // Check for redirect param
+        const redirectTo = searchParams.get('redirect')
+        if (redirectTo) {
+          router.push(redirectTo)
+          return
         }
 
         if (profile?.user_type === 'admin') {

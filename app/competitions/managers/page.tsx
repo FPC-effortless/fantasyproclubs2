@@ -411,9 +411,11 @@ export default function CompetitionManagersPage() {
                   <div className="flex items-center spacing-md mb-4">
                     <Link href={`/managers/${manager.id}`} className="flex items-center gap-3 group">
                       {manager.user_profile.avatar_url ? (
-                        <img
+                        <Image
                           src={manager.user_profile.avatar_url}
                           alt={manager.user_profile.username || 'Manager'}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-500/30 shadow-lg group-hover:ring-blue-500/60 transition-all"
                         />
                       ) : (
@@ -434,9 +436,11 @@ export default function CompetitionManagersPage() {
                   <div className="mb-4 p-3 bg-gray-800/30 rounded-lg">
                     <Link href={`/teams/${manager.team.id}`} className="flex items-center spacing-sm mb-2 group">
                       {manager.team.logo_url ? (
-                        <img
+                        <Image
                           src={manager.team.logo_url}
                           alt={manager.team.name}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover shadow-md group-hover:ring-2 group-hover:ring-green-400 transition-all"
                         />
                       ) : (

@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronDown, Crown, Settings, Users, Activity, RotateCcw, Play, Plus } from "lucide-react"
+import { ChevronDown, Crown, Settings, Users, Activity, RotateCcw, Play, Plus, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Select,
@@ -12,11 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSupabase } from '@/components/providers/supabase-provider'
 import { Database } from '@/types/database'
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
+import { openSignInModal } from '@/components/auth/SignInModal'
 
 interface FantasyTeam {
   id: string
@@ -26,7 +28,7 @@ interface FantasyTeam {
   competition_id: string
 }
 
-interface FantasyPlayer {
+interface BasePlayer {
   id: string
   user_id: string
   position: string
@@ -34,6 +36,9 @@ interface FantasyPlayer {
   team_id: string
   fantasy_price: number
   fantasy_points: number
+}
+
+interface FantasyPlayer extends BasePlayer {
   user_profile: {
     display_name: string
     username: string
@@ -60,6 +65,31 @@ interface FantasyTeamPlayer {
   is_bench: boolean
 }
 
+interface CompetitionTeam {
+  team_id: string
+}
+
+interface UserProfile {
+  id: string
+  display_name: string
+  username: string
+  avatar_url?: string
+}
+
+interface Team {
+  id: string
+  name: string
+  short_name: string
+}
+
+interface PlayerMatchStat {
+  player_id: string
+  goals: number
+  assists: number
+  matches_played: number
+  average_rating: number
+}
+
 export default function TeamPage() {
   const [formation, setFormation] = useState("4-3-3")
   const [captain, setCaptain] = useState("")
@@ -69,7 +99,7 @@ export default function TeamPage() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
 
-  const supabase = createClientComponentClient<Database>()
+  const { supabase } = useSupabase()
   const router = useRouter()
 
   const formations = ["4-3-3", "4-4-2", "3-5-2", "5-3-2", "3-4-3"]
@@ -139,9 +169,6 @@ export default function TeamPage() {
     try {
       console.log('👥 Loading fantasy team players for team:', fantasyTeamId)
 
-      // For now, we'll load all available players since fantasy_team_players table might not exist yet
-      // This is a fallback approach - in a real implementation, you'd have a junction table
-      
       // Get teams in the competition
       const { data: competitionTeams, error: competitionTeamsError } = await supabase
         .from('competition_teams')
@@ -158,7 +185,7 @@ export default function TeamPage() {
         return
       }
 
-      const teamIds = competitionTeams.map(ct => ct.team_id)
+      const teamIds = competitionTeams.map((ct: CompetitionTeam) => ct.team_id)
 
       // Get a sample of players (first 15 for a basic team)
       const { data: playersData, error: playersError } = await supabase
@@ -179,129 +206,78 @@ export default function TeamPage() {
         return
       }
 
-      // Get user profiles - with robust error handling
-      let userProfiles: any[] = []
-      let profilesError: any = null
-      
-      try {
-        const result = await supabase
-        .from('user_profiles')
-        .select('id, display_name, username, avatar_url')
-        .in('id', playersData.map(p => p.user_id))
-        
-        if (result.error) {
-          if (result.error.code === '42703') {
-            console.log('🔄 Avatar column not found, retrying without avatar_url...')
-            const fallbackResult = await supabase
+      // Get user profiles, teams, and match stats in parallel
+      const [userProfilesResult, teamsResult, matchStatsResult] = await Promise.all([
+        (async () => {
+          try {
+            const result = await supabase
               .from('user_profiles')
-              .select('id, display_name, username')
-              .in('id', playersData.map(p => p.user_id))
-            
-            userProfiles = fallbackResult.data || []
-            profilesError = fallbackResult.error
-          } else {
-            userProfiles = result.data || []
-            profilesError = result.error
+              .select('id, display_name, username, avatar_url')
+              .in('id', playersData.map((p: BasePlayer) => p.user_id))
+            if (result.error) {
+              if (result.error.code === '42703') {
+                const fallbackResult = await supabase
+                  .from('user_profiles')
+                  .select('id, display_name, username')
+                  .in('id', playersData.map((p: BasePlayer) => p.user_id))
+                return { data: fallbackResult.data || [], error: fallbackResult.error }
+              } else {
+                return { data: result.data || [], error: result.error }
+              }
+            } else {
+              return { data: result.data || [], error: null }
+            }
+          } catch (error) {
+            return { data: [], error }
           }
-        } else {
-          userProfiles = result.data || []
-        }
-      } catch (error) {
-        console.error('💥 Error loading user profiles:', error)
-        profilesError = error
-        userProfiles = []
+        })(),
+        supabase
+          .from('teams')
+          .select('id, name, short_name')
+          .in('id', playersData.map((p: BasePlayer) => p.team_id)),
+        supabase
+          .from('player_match_stats')
+          .select('player_id, goals, assists, matches_played, average_rating')
+          .in('player_id', playersData.map((p: BasePlayer) => p.id)),
+      ])
+
+      let userProfiles: UserProfile[] = []
+      let profilesError: any = null
+      if (userProfilesResult.error) {
+        profilesError = userProfilesResult.error
+      } else {
+        userProfiles = userProfilesResult.data
       }
 
-      if (profilesError) {
-        console.error('⚠️ Error loading user profiles:', profilesError)
+      const { data: teamsData, error: teamsError } = teamsResult
+      if (teamsError) {
+        console.error('❌ Error loading teams:', teamsError)
+        return
       }
 
-      // Get teams
-      const { data: teamsData, error: teamsError } = await supabase
-        .from('teams')
-        .select('id, name, short_name')
-        .in('id', playersData.map(p => p.team_id))
+      const { data: matchStatsData, error: matchStatsError } = matchStatsResult
+      if (matchStatsError) {
+        console.error('❌ Error loading match stats:', matchStatsError)
+      }
 
-      // Get fantasy stats
-      const { data: fantasyStats, error: statsError } = await supabase
-        .from('fantasy_player_stats')
-        .select('player_id, fantasy_points, fantasy_price')
-        .in('player_id', playersData.map(p => p.id))
-        .eq('competition_id', competitionId)
+      // Combine all the data
+      const enrichedPlayers = playersData.map((player: BasePlayer) => {
+        const userProfile = userProfiles.find((p: UserProfile) => p.id === player.user_id)
+        const team = teamsData?.find((t: Team) => t.id === player.team_id)
+        const matchStats = matchStatsData?.find((s: PlayerMatchStat) => s.player_id === player.id)
 
-      // Get match stats
-      const { data: matchStats, error: matchStatsError } = await supabase
-        .from('player_match_stats')
-        .select('player_id, goals, assists, rating, minutes_played')
-        .in('player_id', playersData.map(p => p.id))
-        .eq('status', 'approved')
-
-      // Aggregate match stats
-      const aggregatedStats = matchStats?.reduce((acc, stat) => {
-        if (!acc[stat.player_id]) {
-          acc[stat.player_id] = {
-            goals: 0,
-            assists: 0,
-            matches_played: 0,
-            total_rating: 0,
-            average_rating: 0
-          }
-        }
-        
-        acc[stat.player_id].goals += stat.goals || 0
-        acc[stat.player_id].assists += stat.assists || 0
-        
-        if (stat.minutes_played && stat.minutes_played > 0) {
-          acc[stat.player_id].matches_played += 1
-          if (stat.rating) {
-            acc[stat.player_id].total_rating += stat.rating
-          }
-        }
-        
-        return acc
-      }, {} as Record<string, any>) || {}
-
-      // Calculate average ratings
-      Object.keys(aggregatedStats).forEach(playerId => {
-        const stats = aggregatedStats[playerId]
-        if (stats.matches_played > 0) {
-          stats.average_rating = stats.total_rating / stats.matches_played
-        }
-      })
-
-      // Map players with all data
-      const playersWithData = playersData.map(player => {
-        const userProfile = userProfiles?.find(up => up.id === player.user_id)
-        const team = teamsData?.find(t => t.id === player.team_id)
-        
         return {
           ...player,
-          fantasy_price: fantasyStats?.find(s => s.player_id === player.id)?.fantasy_price || 5.0,
-          fantasy_points: fantasyStats?.find(s => s.player_id === player.id)?.fantasy_points || 0,
-          user_profile: userProfile || {
-            display_name: 'Unknown Player',
-            username: 'unknown',
-            avatar_url: undefined
-          },
-          team: team || {
-            id: player.team_id,
-            name: 'Unknown Team',
-            short_name: 'UNK'
-          },
-          player_match_stats: aggregatedStats[player.id] || {
-            goals: 0,
-            assists: 0,
-            matches_played: 0,
-            average_rating: 0
-          }
-        }
+          user_profile: userProfile || { display_name: 'Unknown', username: 'unknown' },
+          team: team || { id: '', name: 'Unknown', short_name: 'UNK' },
+          player_match_stats: matchStats || { goals: 0, assists: 0, matches_played: 0, average_rating: 0 }
+        } as FantasyPlayer
       })
 
-      console.log('✅ Loaded fantasy team players:', playersWithData.length)
-      setTeamPlayers(playersWithData)
+      setTeamPlayers(enrichedPlayers)
 
     } catch (error) {
-      console.error('💥 Error loading fantasy team players:', error)
+      console.error('💥 Error in loadFantasyTeamPlayers:', error)
     }
   }
 
@@ -588,7 +564,13 @@ export default function TeamPage() {
           <h2 className="text-2xl font-bold mb-4">No Fantasy Team Found</h2>
           <p className="text-gray-300 mb-6">You haven&apos;t created a fantasy team yet. Create one to start playing!</p>
           <Button 
-            onClick={() => router.push('/fantasy')}
+            onClick={() => {
+              if (!user) {
+                openSignInModal();
+                return;
+              }
+              router.push('/fantasy');
+            }}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
             Create Fantasy Team
@@ -601,165 +583,184 @@ export default function TeamPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900/20 to-gray-900 text-white pb-16">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-800 to-green-900 p-4 shadow-xl">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-            <Users className="w-4 h-4 text-white" />
-          </div>
-          {fantasyTeam.name}
-        </h1>
+      <div className="bg-gradient-to-r from-green-800 to-green-600 p-4 shadow-lg">
+        <div className="flex items-center gap-3">
+          <Link href="/fantasy" className="text-white hover:text-green-200 transition-colors">
+            <ChevronLeft className="w-6 h-6" />
+          </Link>
+          <Users className="w-6 h-6 text-green-200" />
+          <h1 className="text-2xl font-bold">MY TEAM</h1>
+        </div>
       </div>
-
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
-        {/* View Toggle */}
-        <div className="flex justify-center">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
-            <div className="flex">
-              <button
-                onClick={() => setView("pitch")}
-                className={`px-6 py-2 rounded-full font-medium transition-all ${
-                  view === "pitch"
-                    ? "bg-white text-gray-900 shadow-lg"
-                    : "text-white hover:bg-white/10"
-                }`}
-              >
-                Pitch View
-              </button>
-              <button
-                onClick={() => setView("list")}
-                className={`px-6 py-2 rounded-full font-medium transition-all ${
-                  view === "list"
-                    ? "bg-white text-gray-900 shadow-lg"
-                    : "text-white hover:bg-white/10"
-                }`}
-              >
-                List
-              </button>
+      <div className="p-4 space-y-6 max-w-5xl mx-auto">
+        {/* Notification for unauthenticated users */}
+        {!user && (
+          <div className="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 rounded shadow flex items-center justify-between">
+            <div>
+              <strong>Sign up or sign in</strong> to create and manage your own fantasy team, set your lineup, and use all features!
             </div>
+            <Button
+              className="ml-4 bg-green-600 hover:bg-green-700 text-white"
+              onClick={openSignInModal}
+            >
+              Sign Up / Sign In
+            </Button>
           </div>
-        </div>
-
-        {/* Controls */}
-        {view === "pitch" && (
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <Select value={formation} onValueChange={setFormation}>
-                <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white">
-                  <SelectValue placeholder="Formation" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-gray-700">
-                  {formations.map((f) => (
-                    <SelectItem key={f} value={f} className="text-white hover:bg-gray-700">
-                      {f}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        )}
+        {/* Main team content, pitch, and list views should be wrapped in cards with consistent style */}
+        <Card className="bg-black/40 border-white/10 backdrop-blur-sm">
+          <CardContent className="p-4">
+            {/* View Toggle */}
+            <div className="flex justify-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
+                <div className="flex">
+                  <button
+                    onClick={() => setView("pitch")}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${
+                      view === "pitch"
+                        ? "bg-white text-gray-900 shadow-lg"
+                        : "text-white hover:bg-white/10"
+                    }`}
+                  >
+                    Pitch View
+                  </button>
+                  <button
+                    onClick={() => setView("list")}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${
+                      view === "list"
+                        ? "bg-white text-gray-900 shadow-lg"
+                        : "text-white hover:bg-white/10"
+                    }`}
+                  >
+                    List
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="flex-1">
-              <Select value={captain} onValueChange={setCaptain}>
-                <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white">
-                  <div className="flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-yellow-400" />
-                    <SelectValue placeholder="Select Captain" />
+            {/* Controls */}
+            {view === "pitch" && (
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <Select value={formation} onValueChange={setFormation}>
+                    <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white">
+                      <SelectValue placeholder="Formation" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      {formations.map((f) => (
+                        <SelectItem key={f} value={f} className="text-white hover:bg-gray-700">
+                          {f}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex-1">
+                  <Select value={captain} onValueChange={setCaptain}>
+                    <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white">
+                      <div className="flex items-center gap-2">
+                        <Crown className="w-4 h-4 text-yellow-400" />
+                        <SelectValue placeholder="Select Captain" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      <SelectItem value="fwd" className="text-white hover:bg-gray-700">Forward Captain</SelectItem>
+                      <SelectItem value="mid" className="text-white hover:bg-gray-700">Midfielder Captain</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Main Content */}
+            {view === "pitch" ? <PitchView /> : <ListView />}
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Button 
+                variant="outline" 
+                className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+              >
+                Auto Pick
+              </Button>
+              <Button 
+                variant="outline" 
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <Play className="w-4 h-4 mr-2" />
+                Enter Squad
+              </Button>
+            </div>
+
+            {/* Fantasy Chips */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+              <h3 className="text-lg font-bold text-white mb-4">Fantasy Chips</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Button className="flex items-center justify-center gap-3 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:border-green-600/50 text-white hover:bg-gradient-to-r hover:from-green-600/20 hover:to-green-700/20 transition-all duration-300 py-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+                    <Activity className="w-4 h-4 text-white" />
                   </div>
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-gray-700">
-                  <SelectItem value="fwd" className="text-white hover:bg-gray-700">Forward Captain</SelectItem>
-                  <SelectItem value="mid" className="text-white hover:bg-gray-700">Midfielder Captain</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
-
-        {/* Main Content */}
-        {view === "pitch" ? <PitchView /> : <ListView />}
-
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Button 
-            variant="outline" 
-            className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
-          >
-            Auto Pick
-          </Button>
-          <Button 
-            variant="outline" 
-            className="bg-white/10 hover:bg-white/20 text-white border-white/20"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
-          </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
-            <Play className="w-4 h-4 mr-2" />
-            Enter Squad
-          </Button>
-        </div>
-
-        {/* Fantasy Chips */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-          <h3 className="text-lg font-bold text-white mb-4">Fantasy Chips</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button className="flex items-center justify-center gap-3 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:border-green-600/50 text-white hover:bg-gradient-to-r hover:from-green-600/20 hover:to-green-700/20 transition-all duration-300 py-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
-                <Activity className="w-4 h-4 text-white" />
+                  <span className="font-medium">Bench Boost</span>
+                </Button>
+                <Button className="flex items-center justify-center gap-3 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:border-yellow-600/50 text-white hover:bg-gradient-to-r hover:from-yellow-600/20 hover:to-yellow-700/20 transition-all duration-300 py-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
+                    <Crown className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-medium">Triple Captain</span>
+                </Button>
               </div>
-              <span className="font-medium">Bench Boost</span>
-            </Button>
-            <Button className="flex items-center justify-center gap-3 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:border-yellow-600/50 text-white hover:bg-gradient-to-r hover:from-yellow-600/20 hover:to-yellow-700/20 transition-all duration-300 py-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
-                <Crown className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-medium">Triple Captain</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Bench (only shown in pitch view) */}
-        {view === "pitch" && (
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <h3 className="text-lg font-bold text-white mb-4">Bench</h3>
-            <div className="flex gap-4 overflow-x-auto">
-              {teamPlayers.slice(11, 15).map((player, i) => (
-                <PlayerSlot 
-                  key={player.id}
-                  position={player.position} 
-                  player={player}
-                />
-              ))}
-              {/* Fill empty bench slots */}
-              {Array.from({ length: Math.max(0, 4 - teamPlayers.slice(11, 15).length) }, (_, i) => (
-                <PlayerSlot 
-                  key={`bench-empty-${i}`}
-                  position="SUB" 
-                  isEmpty={true}
-                />
-              ))}
             </div>
-          </div>
-        )}
 
-        {/* Team Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-green-400">£{fantasyTeam.budget.toFixed(1)}M</div>
-            <div className="text-sm text-gray-300">Budget Left</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-blue-400">£{(teamPlayers.reduce((sum, p) => sum + p.fantasy_price, 0)).toFixed(1)}M</div>
-            <div className="text-sm text-gray-300">Team Value</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-yellow-400">{fantasyTeam.points}</div>
-            <div className="text-sm text-gray-300">Total Points</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-purple-400">{teamPlayers.length}/15</div>
-            <div className="text-sm text-gray-300">Players</div>
-          </div>
-        </div>
+            {/* Bench (only shown in pitch view) */}
+            {view === "pitch" && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <h3 className="text-lg font-bold text-white mb-4">Bench</h3>
+                <div className="flex gap-4 overflow-x-auto">
+                  {teamPlayers.slice(11, 15).map((player, i) => (
+                    <PlayerSlot 
+                      key={player.id}
+                      position={player.position} 
+                      player={player}
+                    />
+                  ))}
+                  {/* Fill empty bench slots */}
+                  {Array.from({ length: Math.max(0, 4 - teamPlayers.slice(11, 15).length) }, (_, i) => (
+                    <PlayerSlot 
+                      key={`bench-empty-${i}`}
+                      position="SUB" 
+                      isEmpty={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Team Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
+                <div className="text-2xl font-bold text-green-400">£{fantasyTeam.budget.toFixed(1)}M</div>
+                <div className="text-sm text-gray-300">Budget Left</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
+                <div className="text-2xl font-bold text-blue-400">£{(teamPlayers.reduce((sum, p) => sum + p.fantasy_price, 0)).toFixed(1)}M</div>
+                <div className="text-sm text-gray-300">Team Value</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
+                <div className="text-2xl font-bold text-yellow-400">{fantasyTeam.points}</div>
+                <div className="text-sm text-gray-300">Total Points</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
+                <div className="text-2xl font-bold text-purple-400">{teamPlayers.length}/15</div>
+                <div className="text-sm text-gray-300">Players</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

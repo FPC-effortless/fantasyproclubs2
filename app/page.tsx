@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useSupabase } from "@/components/providers/supabase-provider"
@@ -183,19 +183,11 @@ export default function HomePage() {
   
   const { supabase } = useSupabase()
 
-  useEffect(() => {
-    // Get favorite club from localStorage
-    const club = typeof window !== 'undefined' ? localStorage.getItem('favorite_club') : null
-    setFavoriteClub(club)
-    checkAuthAndLoadData()
-  }, [])
-
-  const checkAuthAndLoadData = async () => {
+  const checkAuthAndLoadData = useCallback(async () => {
     try {
       // Check authentication status
       const { data: { user } } = await supabase.auth.getUser()
       setIsAuthenticated(!!user)
-      
       // Load page data
       await loadPageData()
     } catch (error) {
@@ -203,7 +195,14 @@ export default function HomePage() {
       setIsAuthenticated(false)
       await loadPageData()
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    // Get favorite club from localStorage
+    const club = typeof window !== 'undefined' ? localStorage.getItem('favorite_club') : null
+    setFavoriteClub(club)
+    checkAuthAndLoadData()
+  }, [checkAuthAndLoadData])
 
   const loadPageData = async () => {
     try {

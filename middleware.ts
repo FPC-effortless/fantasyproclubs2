@@ -154,24 +154,11 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // Auth protection for protected routes
-  const protectedRoutes = ['/profile', '/admin', '/fantasy', '/matches']
-  const isProtectedRoute = protectedRoutes.some(route => 
-    request.nextUrl.pathname.startsWith(route)
-  )
-
   // Auth routes that should redirect to profile if already logged in
   const authRoutes = ['/login', '/signup', '/reset-password']
   const isAuthRoute = authRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   )
-
-  if (isProtectedRoute && !session) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/login'
-    redirectUrl.searchParams.set('redirect', path)
-    return NextResponse.redirect(redirectUrl)
-  }
 
   if (isAuthRoute && session) {
     const redirectUrl = request.nextUrl.clone()

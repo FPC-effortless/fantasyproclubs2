@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { ArrowRightLeft, User, Calendar, DollarSign, Search, Filter, Clock, CheckCircle, XCircle, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -60,19 +60,7 @@ export default function CompetitionTransfersPage() {
   const [transfers, setTransfers] = useState<Transfer[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    loadCompetitions()
-  }, [])
-
-  useEffect(() => {
-    if (selectedCompetition === null) {
-      loadAllTransfers()
-    } else {
-      loadTransfersForCompetition(selectedCompetition)
-    }
-  }, [selectedCompetition, selectedStatus])
-
-  const loadCompetitions = async () => {
+  const loadCompetitions = useCallback(async () => {
     try {
       console.log('Loading competitions...')
       
@@ -93,9 +81,9 @@ export default function CompetitionTransfersPage() {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase])
 
-  const loadAllTransfers = async () => {
+  const loadAllTransfers = useCallback(async () => {
     try {
       setLoading(true)
       console.log('Loading all transfers...')
@@ -165,9 +153,9 @@ export default function CompetitionTransfersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, selectedStatus])
 
-  const loadTransfersForCompetition = async (competitionId: string) => {
+  const loadTransfersForCompetition = useCallback(async (competitionId: string) => {
     try {
       setLoading(true)
       console.log('Loading transfers for competition:', competitionId)
@@ -255,7 +243,19 @@ export default function CompetitionTransfersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, selectedStatus])
+
+  useEffect(() => {
+    loadCompetitions()
+  }, [loadCompetitions])
+
+  useEffect(() => {
+    if (selectedCompetition === null) {
+      loadAllTransfers()
+    } else {
+      loadTransfersForCompetition(selectedCompetition)
+    }
+  }, [selectedCompetition, selectedStatus, loadAllTransfers, loadTransfersForCompetition])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -394,7 +394,7 @@ export default function CompetitionTransfersPage() {
         {loading ? (
           <div className="space-y-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className={cn(
+                 <div key={i} className={cn(
                 "bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/30 rounded-xl p-6 card-subtle-hover",
                 i % 3 === 0 && "animate-pulse-1",
                 i % 3 === 1 && "animate-pulse-2",
