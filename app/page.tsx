@@ -12,6 +12,8 @@ import { Search, Bell, Clock, User, Star, Trophy, TrendingUp, Users, Target, Arr
 import { toast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MatchCard } from "@/components/match/match-card"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { cn } from "@/lib/utils"
 
 interface Match {
   id: string
@@ -101,7 +103,7 @@ function FeaturePreviewSection() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent mb-4">
-            Choose Your Path in EA FC Pro Clubs
+            Choose Your Path in Fantasy Pro Clubs
           </h2>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">
             Whether you&apos;re a fan, player, or manager - there&apos;s a perfect experience waiting for you
@@ -175,10 +177,16 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [favoriteClub, setFavoriteClub] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null)
   
   const { supabase } = useSupabase()
 
   useEffect(() => {
+    // Get favorite club from localStorage
+    const club = typeof window !== 'undefined' ? localStorage.getItem('favorite_club') : null
+    setFavoriteClub(club)
     checkAuthAndLoadData()
   }, [])
 
@@ -286,7 +294,7 @@ export default function HomePage() {
       }
       
       // Transform and validate the data
-      const transformedMatches: Match[] = data
+      const transformedMatches = data
         .filter((match: any) => {
           // Validate required fields
           if (!match.id || !match.match_date || !match.status) {
@@ -315,18 +323,18 @@ export default function HomePage() {
             home_team: {
               id: homeTeam.id,
               name: homeTeam.name || 'Unknown Team',
-              logo_url: homeTeam.logo_url
+              logo_url: homeTeam.logo_url ?? null
             },
             away_team: {
               id: awayTeam.id,
               name: awayTeam.name || 'Unknown Team',
-              logo_url: awayTeam.logo_url
+              logo_url: awayTeam.logo_url ?? null
             },
             competition: {
               name: competition.name || 'Unknown Competition',
-              logo_url: null
+              logo_url: competition.logo_url ?? null
             }
-          }
+          } as Match
         })
         .filter((match): match is Match => match !== null)
       
@@ -473,10 +481,24 @@ export default function HomePage() {
     return date.toLocaleDateString()
   }
 
+  // Personalize news: prioritize articles about favorite club
+  const personalizedNews = favoriteClub
+    ? [
+        ...news.filter(article =>
+          article.title.toLowerCase().includes(favoriteClub.replace(/[^a-z]/gi, '').toLowerCase()) ||
+          (article.content && article.content.toLowerCase().includes(favoriteClub.replace(/[^a-z]/gi, '').toLowerCase()))
+        ),
+        ...news.filter(article =>
+          !article.title.toLowerCase().includes(favoriteClub.replace(/[^a-z]/gi, '').toLowerCase()) &&
+          !(article.content && article.content.toLowerCase().includes(favoriteClub.replace(/[^a-z]/gi, '').toLowerCase()))
+        )
+      ]
+    : news
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pb-16">
-        <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 to-green-900 backdrop-blur-lg border-b border-green-700/20 p-4 flex items-center justify-between shadow-lg">
+        <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 to-green-900 backdrop-blur-lg border-b border-green-700/20 px-4 py-3 sm:p-4 flex items-center justify-between shadow-lg">
           <h1 className="text-xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent">Fantasy Pro Clubs</h1>
           <div className="flex items-center space-x-4">
             <button className="p-2 hover:bg-green-700/30 rounded-lg transition-colors" aria-label="Search">
@@ -502,7 +524,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pb-16">
-      {/* Enhanced Mobile-Responsive Header */}
+      {/* [UNIFIED UI] Modern header and background, matching /competitions */}
       <header className="sticky top-0 z-50 bg-gradient-to-r from-green-800 to-green-900 backdrop-blur-lg border-b border-green-700/20 px-4 py-3 sm:p-4 flex items-center justify-between shadow-lg">
         <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent truncate">Fantasy Pro Clubs</h1>
         <div className="flex items-center space-x-2 sm:space-x-4">
@@ -515,8 +537,91 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Feature Preview Section for Unsigned Users */}
+      {/* Welcome information for unauthenticated users */}
       {isAuthenticated === false && <FeaturePreviewSection />}
+
+      {/* [UNIFIED UI] Competition search and horizontal scrollable list (if multiple competitions) */}
+      {competitions.length > 1 && (
+        <div className="mb-6 animate-in fade-in slide-in-from-top" style={{animationDelay: '100ms'}}>
+          <div className="relative max-w-4xl mx-auto px-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Search competitions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gradient-to-r from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl pl-10 pr-4 py-3 text-body-emphasis placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600/50 focus:border-green-600/50 transition-all duration-300 backdrop-blur-sm"
+            />
+          </div>
+          <div className="mt-4">
+            <ScrollArea className="w-full whitespace-nowrap rounded-xl">
+              <div className="flex spacing-md pb-4">
+                {competitions
+                  .filter(comp =>
+                    comp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    comp.type.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((competition) => (
+                    <button
+                      key={competition.id}
+                      onClick={() => setSelectedCompetition(competition.id)}
+                      className={cn(
+                        "bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border rounded-xl p-6 min-w-[240px] text-left transition-all duration-300 ease-out btn-enhanced card-interactive",
+                        selectedCompetition === competition.id
+                          ? "border-green-600/60 bg-gradient-to-br from-green-900/30 to-gray-900/40 shadow-lg shadow-green-500/20"
+                          : "border-gray-700/30 card-subtle-hover"
+                      )}
+                    >
+                      <div className="flex items-center spacing-sm mb-3">
+                        <div className={cn(
+                          "w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all duration-300",
+                          selectedCompetition === competition.id
+                            ? "bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30"
+                            : "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                        )}>
+                          {competition.name.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className={cn(
+                            "text-body-emphasis truncate",
+                            selectedCompetition === competition.id ? "text-green-100" : "text-white"
+                          )}>
+                            {competition.name}
+                          </h3>
+                          <div className="flex items-center spacing-xs">
+                            <Badge 
+                              variant="secondary" 
+                              className={cn(
+                                "text-caption px-2 py-1",
+                                selectedCompetition === competition.id 
+                                  ? "bg-green-600/20 text-green-300 border-green-500/30" 
+                                  : "bg-gray-700/50 text-gray-300"
+                              )}
+                            >
+                              {competition.type}
+                            </Badge>
+                            <Badge 
+                              variant="outline" 
+                              className={cn(
+                                "text-caption px-2 py-1",
+                                competition.status === 'active' ? "border-green-500/30 text-green-400" :
+                                competition.status === 'upcoming' ? "border-yellow-500/30 text-yellow-400" :
+                                "border-gray-500/30 text-gray-400"
+                              )}
+                            >
+                              {competition.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+        </div>
+      )}
 
       {/* Enhanced Mobile-Responsive Featured Match Banner */}
       {featuredMatch ? (
@@ -728,8 +833,8 @@ export default function HomePage() {
         </div>
 
         <div className="space-y-6">
-          {news.length > 0 ? (
-            news.map((article) => (
+          {personalizedNews.length > 0 ? (
+            personalizedNews.map((article) => (
               <Link key={article.id} href={`/news/${article.slug}`} className="block group">
                 <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border-gray-700/30 overflow-hidden hover:border-green-600/40 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-green-900/20">
                   {article.image_url ? (
