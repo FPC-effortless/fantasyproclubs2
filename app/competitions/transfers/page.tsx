@@ -9,6 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
+import Image from "next/image"
 
 interface Competition {
   id: string
@@ -459,9 +460,11 @@ export default function CompetitionTransfersPage() {
                     {/* From Team */}
                     <div className="flex items-center spacing-sm">
                       {transfer.from_team?.logo_url ? (
-                        <img
+                        <Image
                           src={transfer.from_team.logo_url}
                           alt={transfer.from_team.name}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover shadow-md"
                         />
                       ) : (
@@ -491,9 +494,11 @@ export default function CompetitionTransfersPage() {
                         <p className="text-caption text-right">To</p>
                       </div>
                       {transfer.to_team?.logo_url ? (
-                        <img
+                        <Image
                           src={transfer.to_team.logo_url}
                           alt={transfer.to_team.name}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full object-cover shadow-md"
                         />
                       ) : (
