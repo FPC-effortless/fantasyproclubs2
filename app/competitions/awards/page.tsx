@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import { createClient } from '@/lib/supabase/client'
+import Image from "next/image"
 
 interface Competition {
   id: string
@@ -437,9 +438,11 @@ export default function CompetitionAwardsPage() {
                           </p>
                         </div>
                         {award.player.team.logo_url && (
-                          <img
+                          <Image
                             src={award.player.team.logo_url}
                             alt={award.player.team.name}
+                            width={24}
+                            height={24}
                             className="w-6 h-6 rounded-full object-cover shadow-md"
                           />
                         )}
@@ -490,9 +493,11 @@ export default function CompetitionAwardsPage() {
                     {/* Trophy Image/Icon */}
                     <div className="mb-4">
                       {trophy.image_url ? (
-                        <img
+                        <Image
                           src={trophy.image_url}
                           alt={trophy.name}
+                          width={64}
+                          height={64}
                           className="w-16 h-16 mx-auto object-cover rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300"
                         />
                       ) : (
