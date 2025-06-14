@@ -11,6 +11,9 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Search, Users, Star, Check } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { Label } from '@/components/ui/label'
 
 interface Team {
   id: string
@@ -34,53 +37,46 @@ export function TeamSelection({ selectedTeamId, onTeamSelect, showSkipOption = t
   const [teams, setTeams] = useState<Team[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
+  const router = useRouter()
+  const [teamName, setTeamName] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    loadTeams()
-  }, [])
-
-  const loadTeams = async () => {
-    try {
-      setLoading(true)
-      
-      const { data, error } = await supabase
-        .from('teams')
-        .select(`
-          id,
-          name,
-          short_name,
-          logo_url,
-          description,
-          manager:user_profiles!teams_manager_id_fkey (
+    const fetchTeams = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('teams')
+          .select(`
             id,
-            display_name
-          )
-        `)
-        .order('name')
+            name,
+            short_name,
+            logo_url,
+            description,
+            manager:user_profiles!teams_manager_id_fkey (
+              id,
+              display_name
+            )
+          `)
+          .order('name')
 
-      if (error) {
-        console.error('Error loading teams:', error)
+        if (error) throw error
+
+        setTeams(data || [])
+      } catch (err) {
+        console.error('Error fetching teams:', err)
         toast({
-          title: "Error",
-          description: "Failed to load teams. Please try again.",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to load teams. Please try again.',
+          variant: 'destructive',
         })
-        return
+      } finally {
+        setLoading(false)
       }
-
-      setTeams(data || [])
-    } catch (error) {
-      console.error('Error loading teams:', error)
-      toast({
-        title: "Error",
-        description: "Failed to load teams. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchTeams()
+  }, [supabase])
 
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -89,6 +85,72 @@ export function TeamSelection({ selectedTeamId, onTeamSelect, showSkipOption = t
 
   const handleTeamSelect = (teamId: string) => {
     onTeamSelect(teamId === selectedTeamId ? null : teamId)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        setError('You must be logged in to create a team')
+        return
+      }
+
+      const { data: existingTeam, error: teamError } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('name', teamName)
+        .single()
+
+      if (teamError && teamError.code !== 'PGRST116') {
+        throw teamError
+      }
+
+      if (existingTeam) {
+        setError('A team with this name already exists')
+        return
+      }
+
+      const { data: team, error: createError } = await supabase
+        .from('teams')
+        .insert([
+          {
+            name: teamName,
+            created_by: session.user.id,
+            created_at: new Date().toISOString(),
+          },
+        ])
+        .select()
+        .single()
+
+      if (createError) {
+        throw createError
+      }
+
+      // Update user profile with team ID
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({
+          team_id: team.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', session.user.id)
+
+      if (profileError) {
+        throw profileError
+      }
+
+      router.push('/profile')
+    } catch (err) {
+      console.error('Error creating team:', err)
+      setError('Failed to create team. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (loading) {
@@ -233,6 +295,23 @@ export function TeamSelection({ selectedTeamId, onTeamSelect, showSkipOption = t
           </div>
         </div>
       )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="teamName">Team Name</Label>
+          <Input
+            id="teamName"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="Enter your team name"
+            required
+          />
+        </div>
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        <Button type="submit" disabled={loading}>
+          {loading ? 'Creating...' : 'Create Team'}
+        </Button>
+      </form>
     </div>
   )
 } 

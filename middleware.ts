@@ -1,65 +1,28 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/types/database'
 
-// Simple in-memory rate limiting (for production, use Redis or database)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
-
 // Rate limiting configuration
-const RATE_LIMITS = {
-  auth: { windowMs: 15 * 60 * 1000, maxRequests: 20 }, // 20 auth attempts per 15 minutes
-  api: { windowMs: 60 * 1000, maxRequests: 100 }, // 100 API calls per minute
-  signup: { windowMs: 60 * 60 * 1000, maxRequests: 20 }, // 20 signups per hour
+const rateLimitConfig = {
+  maxRequests: 100,
+  windowMs: 15 * 60 * 1000, // 15 minutes
 }
 
-function getRateLimitKey(ip: string, path: string): string {
-  if (path.startsWith('/api/auth/')) return `auth:${ip}`
-  if (path.startsWith('/api/')) return `api:${ip}`
-  return `general:${ip}`
-}
+// Store rate limits in memory (consider using Redis in production)
+const rateLimits = new Map<string, { count: number; resetTime: number; remaining: number; allowed: boolean }>()
 
-function checkRateLimit(key: string, config: { windowMs: number; maxRequests: number }): {
-  allowed: boolean
-  remaining: number
-  resetTime: number
-} {
+// Cleanup expired rate limits
+function cleanupRateLimit() {
   const now = Date.now()
-  const entry = rateLimitStore.get(key)
-
-  // Reset if window expired
-  if (!entry || entry.resetTime <= now) {
-    const newEntry = {
-      count: 1,
-      resetTime: now + config.windowMs
+  for (const [key, value] of rateLimits.entries()) {
+    if (value.resetTime < now) {
+      rateLimits.delete(key)
     }
-    rateLimitStore.set(key, newEntry)
-    return {
-      allowed: true,
-      remaining: config.maxRequests - 1,
-      resetTime: newEntry.resetTime
-    }
-  }
-
-  // Check if limit exceeded
-  if (entry.count >= config.maxRequests) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetTime: entry.resetTime
-    }
-  }
-
-  // Increment counter
-  entry.count++
-  rateLimitStore.set(key, entry)
-
-  return {
-    allowed: true,
-    remaining: config.maxRequests - entry.count,
-    resetTime: entry.resetTime
   }
 }
+
+// Run cleanup every 5 minutes
+setInterval(cleanupRateLimit, 5 * 60 * 1000)
 
 function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -76,133 +39,147 @@ function getClientIP(request: NextRequest): string {
   return 'unknown'
 }
 
-function cleanupRateLimit() {
-  const now = Date.now()
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetTime <= now) {
-      rateLimitStore.delete(key)
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
     }
-  }
-}
+  )
 
-// Clean up rate limit store every 5 minutes
-setInterval(cleanupRateLimit, 5 * 60 * 1000)
+  const { data: { session } } = await supabase.auth.getSession()
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const ip = getClientIP(req)
-  const path = req.nextUrl.pathname
+  const ip = getClientIP(request)
+  const path = request.nextUrl.pathname
 
   // Apply rate limiting only to API routes
-  let rateLimitConfig = RATE_LIMITS.api
-  if (path.startsWith('/api/auth/')) {
-    rateLimitConfig = path.includes('signup') ? RATE_LIMITS.signup : RATE_LIMITS.auth
-  }
+  if (path.startsWith('/api')) {
+    const now = Date.now()
+    const rateLimit = rateLimits.get(ip) || { 
+      count: 0, 
+      resetTime: now + rateLimitConfig.windowMs,
+      remaining: rateLimitConfig.maxRequests,
+      allowed: true
+    }
 
-  // Only apply rate limiting to API routes
-  if (path.startsWith('/api/')) {
-    const rateLimitKey = getRateLimitKey(ip, path)
-    const rateLimit = checkRateLimit(rateLimitKey, rateLimitConfig)
+    // Reset if window has passed
+    if (now > rateLimit.resetTime) {
+      rateLimit.count = 0
+      rateLimit.resetTime = now + rateLimitConfig.windowMs
+      rateLimit.remaining = rateLimitConfig.maxRequests
+      rateLimit.allowed = true
+    }
+
+    // Increment count
+    rateLimit.count++
+    rateLimit.remaining = rateLimitConfig.maxRequests - rateLimit.count
+    rateLimit.allowed = rateLimit.count <= rateLimitConfig.maxRequests
+    rateLimits.set(ip, rateLimit)
 
     // Add rate limit headers
-    res.headers.set('X-RateLimit-Limit', rateLimitConfig.maxRequests.toString())
-    res.headers.set('X-RateLimit-Remaining', rateLimit.remaining.toString())
-    res.headers.set('X-RateLimit-Reset', Math.ceil(rateLimit.resetTime / 1000).toString())
+    response.headers.set('X-RateLimit-Limit', rateLimitConfig.maxRequests.toString())
+    response.headers.set('X-RateLimit-Remaining', rateLimit.remaining.toString())
+    response.headers.set('X-RateLimit-Reset', Math.ceil(rateLimit.resetTime / 1000).toString())
 
     if (!rateLimit.allowed) {
-      const retryAfter = Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
-      
-      return new NextResponse(
-        JSON.stringify({
-          error: 'Rate limit exceeded',
-          message: 'Too many requests, please try again later',
-          retryAfter
-        }),
-        {
-          status: 429,
-          headers: {
-            'Content-Type': 'application/json',
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': rateLimitConfig.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': Math.ceil(rateLimit.resetTime / 1000).toString()
-          }
-        }
-      )
+      return new NextResponse('Too Many Requests', { status: 429 })
     }
   }
 
   // Security headers
-  res.headers.set('X-Content-Type-Options', 'nosniff')
-  res.headers.set('X-Frame-Options', 'DENY')
-  res.headers.set('X-XSS-Protection', '1; mode=block')
-  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
 
   // Skip middleware for API routes, static files, and most routes until Supabase is configured
   if (
-    req.nextUrl.pathname.startsWith('/api') ||
-    req.nextUrl.pathname.startsWith('/_next') ||
-    req.nextUrl.pathname.includes('.') ||
+    request.nextUrl.pathname.startsWith('/api') ||
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.includes('.') ||
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_project_url_here'
   ) {
-    return res
+    return response
   }
-
-  const supabase = createMiddlewareClient<Database>({ req, res })
 
   // Public routes that don't need authentication
   const publicRoutes = [
-    '/', 
-    '/login', 
-    '/auth/signup', 
-    '/auth/reset-password',
-    '/competitions',
-    '/fantasy',
-    '/profile',
+    '/',
+    '/login',
+    '/signup',
+    '/reset-password',
+    '/verify',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/terms',
     '/api',
-    '/teams'
   ]
-  
+
   const isPublicRoute = publicRoutes.some(route => 
-    req.nextUrl.pathname === route || 
-    req.nextUrl.pathname.startsWith(route + '/') ||
-    (route !== '/' && req.nextUrl.pathname.startsWith(route))
+    request.nextUrl.pathname === route || 
+    request.nextUrl.pathname.startsWith(route + '/') ||
+    (route !== '/' && request.nextUrl.pathname.startsWith(route))
   )
 
   // Skip middleware for public routes
   if (isPublicRoute) {
-    return res
+    return response
   }
 
-  // Refresh session if expired
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
   // Auth protection for protected routes
-  const protectedRoutes = ['/profile', '/dashboard', '/team', '/manager']
-  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
+  const protectedRoutes = ['/profile', '/admin', '/fantasy', '/matches']
+  const isProtectedRoute = protectedRoutes.some(route => 
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // Auth routes that should redirect to profile if already logged in
+  const authRoutes = ['/login', '/signup', '/reset-password']
+  const isAuthRoute = authRoutes.some(route => 
+    request.nextUrl.pathname.startsWith(route)
+  )
 
   if (isProtectedRoute && !session) {
-    const redirectUrl = req.nextUrl.clone()
+    const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/login'
     redirectUrl.searchParams.set('redirect', path)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Redirect authenticated users away from auth pages
-  const authRoutes = ['/login', '/auth/signup']
-  const isAuthRoute = authRoutes.some(route => path.startsWith(route))
-
   if (isAuthRoute && session) {
-    const redirectUrl = req.nextUrl.clone()
+    const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/profile'
     return NextResponse.redirect(redirectUrl)
   }
 
-  return res
+  return response
 }
 
 export const config = {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/lib/database.types'
 import PlayerPriceManagement from '@/components/admin/player-price-management'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { toast } from '@/components/ui/use-toast'
 
 export default function FantasyManagementPage() {
   const [isInitializing, setIsInitializing] = useState(false)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const testUserPermissions = async () => {
     console.log('=== USER PERMISSIONS TEST ===')

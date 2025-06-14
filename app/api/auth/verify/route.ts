@@ -1,44 +1,61 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { EmailService } from '@/lib/email/email-service';
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import { EmailService } from '@/lib/email/email-service'
 
 export async function POST(request: NextRequest) {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
   try {
-    const { token } = await request.json();
+    const { token } = await request.json()
 
     if (!token) {
       return NextResponse.json(
         { error: 'Verification token is required' },
         { status: 400 }
-      );
+      )
     }
-
-    const supabase = createRouteHandlerClient({ cookies });
 
     // Find the verification token
     const { data: tokenData, error: tokenError } = await supabase
       .from('email_verification_tokens')
       .select('*')
       .eq('token', token)
-      .single();
+      .single()
 
     if (tokenError || !tokenData) {
       return NextResponse.json(
         { error: 'Invalid verification token' },
         { status: 400 }
-      );
+      )
     }
 
     // Check if token has expired
-    const now = new Date();
-    const expiresAt = new Date(tokenData.expires_at);
+    const now = new Date()
+    const expiresAt = new Date(tokenData.expires_at)
     
     if (now > expiresAt) {
       return NextResponse.json(
         { error: 'Verification token has expired' },
         { status: 400 }
-      );
+      )
     }
 
     // Update user profile to mark email as verified
@@ -48,36 +65,36 @@ export async function POST(request: NextRequest) {
         email_verified: true,
         updated_at: new Date().toISOString()
       })
-      .eq('id', tokenData.user_id);
+      .eq('id', tokenData.user_id)
 
     if (profileError) {
-      console.error('Error updating user profile:', profileError);
+      console.error('Error updating user profile:', profileError)
       return NextResponse.json(
         { error: 'Failed to verify email' },
         { status: 500 }
-      );
+      )
     }
 
     // Update auth user metadata if possible
     try {
       const { error: authError } = await supabase.auth.updateUser({
         data: { email_verified: true }
-      });
+      })
       if (authError) {
-        console.error('Error updating auth metadata:', authError);
+        console.error('Error updating auth metadata:', authError)
       }
     } catch (authError) {
-      console.error('Error updating auth metadata:', authError);
+      console.error('Error updating auth metadata:', authError)
     }
 
     // Delete the verification token
     const { error: deleteError } = await supabase
       .from('email_verification_tokens')
       .delete()
-      .eq('token', token);
+      .eq('token', token)
 
     if (deleteError) {
-      console.error('Error deleting verification token:', deleteError);
+      console.error('Error deleting verification token:', deleteError)
       // Don't fail the verification for this
     }
 
@@ -86,7 +103,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('full_name, email')
       .eq('id', tokenData.user_id)
-      .single();
+      .single()
 
     // Send welcome email
     if (userProfile) {
@@ -94,9 +111,9 @@ export async function POST(request: NextRequest) {
         await EmailService.sendWelcomeEmail({
           to: userProfile.email,
           userName: userProfile.full_name || userProfile.email.split('@')[0]
-        });
+        })
       } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
+        console.error('Error sending welcome email:', emailError)
         // Don't fail verification if welcome email fails
       }
     }
@@ -104,14 +121,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Email verified successfully! Welcome to Fantasy Pro Clubs!'
-    });
+    })
 
   } catch (error) {
-    console.error('Email verification error:', error);
+    console.error('Email verification error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 

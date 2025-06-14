@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/lib/database.types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
@@ -21,7 +21,7 @@ export default function TeamList({ competitionId, onStartDraw, onBack }: TeamLis
   const [teams, setTeams] = useState<Team[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const loadTeams = useCallback(async () => {
     try {

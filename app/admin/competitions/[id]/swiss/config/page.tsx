@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { toast } from 'react-hot-toast'
 import { useParams } from 'next/navigation'
 import { Database } from '@/lib/database.types'
@@ -28,7 +28,7 @@ export default function SwissConfigPage() {
   const [config, setConfig] = useState<SwissConfig | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
   const params = useParams()
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const loadConfig = useCallback(async () => {
     const { data, error } = await supabase

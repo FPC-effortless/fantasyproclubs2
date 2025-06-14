@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database'
 import { toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
@@ -41,7 +41,7 @@ export default function VisualDraw({ competitionId, onComplete, onBack }: Visual
   const [isSelecting, setIsSelecting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const startNextDraw = useCallback(() => {
     if (!config) return
