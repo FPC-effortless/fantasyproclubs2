@@ -40,7 +40,6 @@ const navigationItems: NavigationItem[] = [
     label: "Profile",
     icon: User,
     href: "/profile",
-    badge: 2, // Example badge count for upgrade notifications
   },
 ]
 
