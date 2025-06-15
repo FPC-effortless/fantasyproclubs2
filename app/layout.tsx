@@ -4,6 +4,7 @@ import { Metadata } from 'next'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/theme-provider'
+import { SupabaseProvider } from '@/components/providers/supabase-provider'
 import { defaultMetadata } from './metadata'
 
 const inter = Inter({ subsets: ["latin"] })
@@ -33,8 +34,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-            <Toaster />
+            <SupabaseProvider>
+              {children}
+              <Toaster />
+            </SupabaseProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>
