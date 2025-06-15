@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -67,13 +67,13 @@ export function FeaturedContentManagement() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [supabase] = useState(() => createClient())
 
   useEffect(() => {
     fetchData()
   }, [])
 
   async function fetchData() {
-    const supabase = createClientComponentClient()
     try {
       // Fetch matches with related data
       const { data: matchesData, error: matchesError } = await supabase
@@ -159,7 +159,6 @@ export function FeaturedContentManagement() {
   }
 
   const handleSetFeaturedMatch = async (matchId: string) => {
-    const supabase = createClientComponentClient()
     try {
       const { error } = await supabase
         .from('featured_content')
@@ -191,7 +190,6 @@ export function FeaturedContentManagement() {
   }
 
   const handleSetFeaturedCompetition = async (competitionId: string) => {
-    const supabase = createClientComponentClient()
     try {
       const { error } = await supabase
         .from('featured_content')

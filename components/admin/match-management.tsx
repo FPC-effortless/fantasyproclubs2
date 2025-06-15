@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import {
   Card,
   CardContent,
@@ -84,7 +84,7 @@ export function MatchManagement() {
     frequency: 'weekly',
     homeAndAway: true
   })
-  const supabase = createClientComponentClient()
+  const [supabase] = useState(() => createClient())
 
   useEffect(() => {
     fetchCompetitions()

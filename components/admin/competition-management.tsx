@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { Database } from "@/types/database"
 import {
   Trophy,
@@ -168,8 +168,7 @@ export default function CompetitionManagement() {
   const router = useRouter()
   const [showSwissConfig, setShowSwissConfig] = useState(false)
   const [currentCompetitionId, setCurrentCompetitionId] = useState<string | null>(null)
-
-  const supabase = createClientComponentClient<Database>()
+  const [supabase] = useState(() => createClient())
 
   useEffect(() => {
     console.log('🚀 [CompetitionManagement] Initializing...')
@@ -277,7 +276,6 @@ export default function CompetitionManagement() {
 
   async function fetchTeams() {
     setError(null)
-    const supabase = createClientComponentClient<Database>()
     try {
       console.log('Fetching teams...')
       const { data: teamsData, error: teamsError } = await supabase
@@ -312,7 +310,6 @@ export default function CompetitionManagement() {
   }
 
   async function fetchManagers() {
-    const supabase = createClientComponentClient<Database>()
     try {
       const { data: managersData, error: managersError } = await supabase
         .from('user_profiles')
@@ -346,8 +343,6 @@ export default function CompetitionManagement() {
     // Fetch teams first to populate the list
     await fetchTeams()
     
-    const supabase = createClientComponentClient<Database>()
-    
     try {
       // Get current teams in the competition
       const { data: existingTeams } = await supabase
@@ -379,8 +374,6 @@ export default function CompetitionManagement() {
     if (!selectedCompetition) return
     setIsLoading(true)
 
-    const supabase = createClientComponentClient<Database>()
-    
     try {
       // Check user role first
       const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -506,7 +499,6 @@ export default function CompetitionManagement() {
 
   const handleAddCompetition = async (formData: FormData) => {
     setIsLoading(true)
-    const supabase = createClientComponentClient<Database>()
 
     try {
       // Log raw form data for debugging
@@ -604,7 +596,6 @@ export default function CompetitionManagement() {
   }
 
   const handleSwissConfigSubmit = async (config: SwissModelConfig) => {
-    const supabase = createClientComponentClient<Database>()
     try {
       // Convert camelCase to snake_case for database
       const dbConfig = {
@@ -723,7 +714,6 @@ export default function CompetitionManagement() {
   const handleEditCompetition = async (formData: FormData) => {
     if (!editingCompetition) return
     setIsLoading(true)
-    const supabase = createClientComponentClient<Database>()
 
     try {
       // Validate required fields

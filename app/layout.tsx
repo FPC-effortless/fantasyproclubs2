@@ -1,15 +1,14 @@
 import { Inter } from "next/font/google"
-import { ProvidersWrapper } from "@/components/providers/providers-wrapper"
 import "./globals.css"
 import { Metadata } from 'next'
-import { SignInModalProvider } from '@/components/auth/SignInModalContext'
+import { ErrorBoundary } from '@/components/error-boundary'
+import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from '@/components/theme-provider'
+import { defaultMetadata } from './metadata'
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "Fantasy Pro Clubs",
-  description: "Your ultimate destination for managing and tracking your Fantasy Pro Clubs journey",
-}
+export const metadata = defaultMetadata
 
 export const viewport = {
   width: 'device-width',
@@ -27,11 +26,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <SignInModalProvider>
-          <ProvidersWrapper>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
             {children}
-          </ProvidersWrapper>
-        </SignInModalProvider>
+            <Toaster />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

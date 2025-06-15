@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { useRouter } from 'next/navigation'
 import {
@@ -72,7 +72,7 @@ export function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  const supabase = createClientComponentClient<Database>()
+  const [supabase] = useState(() => createClient())
   const router = useRouter()
 
   const fetchDashboardData = useCallback(async () => {
