@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useSupabase } from "@/components/providers/supabase-provider"
+import { createClient } from '@/lib/supabase/client'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -74,7 +74,7 @@ interface Competition {
 export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
-  const { supabase } = useSupabase()
+  const supabase = createClient()
 
   const checkAuth = useCallback(async () => {
     try {
