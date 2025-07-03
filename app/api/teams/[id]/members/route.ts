@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const { id } = await params
+    const supabase = await createClient()
     
     const { data, error } = await supabase
       .from('players')
@@ -22,7 +23,7 @@ export async function GET(
           avatar_url
         )
       `)
-      .eq('team_id', params.id)
+      .eq('team_id', id)
 
     if (error) throw error
 

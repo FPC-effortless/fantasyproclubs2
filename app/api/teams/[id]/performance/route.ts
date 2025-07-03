@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const { id } = await params
+    const supabase = await createClient()
     
     // Fetch all matches for the team
     const { data: matches, error: matchesError } = await supabase
@@ -21,7 +22,7 @@ export async function GET(
         away_score,
         status
       `)
-      .or(`home_team_id.eq.${params.id},away_team_id.eq.${params.id}`)
+      .or(`home_team_id.eq.${id},away_team_id.eq.${id}`)
       .eq('status', 'completed')
       .order('date', { ascending: false })
 
@@ -37,7 +38,7 @@ export async function GET(
     let form: Array<'W' | 'D' | 'L'> = []
 
     matches.forEach(match => {
-      const isHome = match.home_team_id === params.id
+      const isHome = match.home_team_id === id
       const teamScore = isHome ? match.home_score : match.away_score
       const opponentScore = isHome ? match.away_score : match.home_score
 
@@ -67,7 +68,7 @@ export async function GET(
       points: wins * 3 + draws,
       form: form.slice(0, 5), // Last 5 matches
       recentResults: matches.slice(0, 5).map(match => {
-        const isHome = match.home_team_id === params.id
+        const isHome = match.home_team_id === id
         const teamScore = isHome ? match.home_score : match.away_score
         const opponentScore = isHome ? match.away_score : match.home_score
         let result: 'W' | 'D' | 'L'

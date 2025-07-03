@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const { id } = await params
+    const supabase = await createClient()
     
     const { data, error } = await supabase
       .from('matches')
@@ -21,7 +22,7 @@ export async function GET(
         away_score,
         status
       `)
-      .or(`home_team_id.eq.${params.id},away_team_id.eq.${params.id}`)
+      .or(`home_team_id.eq.${id},away_team_id.eq.${id}`)
       .order('date', { ascending: true })
 
     if (error) throw error

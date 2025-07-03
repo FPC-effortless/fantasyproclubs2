@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const { id } = await params
+    const supabase = await createClient()
     
     const { data, error } = await supabase
       .from('teams')
@@ -27,7 +28,7 @@ export async function GET(
           user:user_id(username, avatar_url)
         )
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) throw error
