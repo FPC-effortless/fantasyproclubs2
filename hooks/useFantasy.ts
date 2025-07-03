@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Database } from '@/types/database'
 import { FantasyTeam, Player } from '@/types/database'
 
@@ -7,7 +7,7 @@ export function useFantasy() {
   const [fantasyTeams, setFantasyTeams] = useState<FantasyTeam[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     fetchFantasyTeams()

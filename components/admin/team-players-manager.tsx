@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
 import {
   Table,
@@ -93,7 +93,7 @@ export function TeamPlayersManager({ team, onTeamUpdate }: TeamPlayersManagerPro
   const [searchQuery, setSearchQuery] = useState("")
   const [dialogSearchQuery, setDialogSearchQuery] = useState("")
   const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] = useState(false)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     if (team) {

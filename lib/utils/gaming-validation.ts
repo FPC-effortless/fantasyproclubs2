@@ -1,4 +1,4 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { toast } from "@/components/ui/use-toast"
 import { ValidationError, DatabaseError } from "@/lib/errors"
@@ -102,7 +102,7 @@ export async function checkDuplicateGamingTags(
   tag: string,
   platform: 'xbox' | 'playstation'
 ): Promise<ApiResponse<DuplicateCheckResult>> {
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
   
   try {
     const { data: existingUser, error } = await supabase

@@ -1,10 +1,10 @@
 "use client"
 
-import React from 'react'
-import { Button } from '@/components/ui/button'
+import { Component, ErrorInfo, ReactNode } from "react"
 
 interface Props {
-  children: React.ReactNode
+  children: ReactNode
+  fallback?: ReactNode
 }
 
 interface State {
@@ -12,44 +12,33 @@ interface State {
   error?: Error
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+export class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo)
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo)
   }
 
-  render() {
+  public render() {
     if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-          <div className="max-w-md w-full p-6 bg-gray-800 rounded-lg shadow-xl">
-            <h2 className="text-2xl font-bold text-red-500 mb-4">Something went wrong</h2>
-            <p className="text-gray-300 mb-4">
-              {this.state.error?.message || 'An unexpected error occurred'}
-            </p>
-            <div className="space-x-4">
-              <Button
-                onClick={() => window.location.reload()}
-                variant="default"
-              >
-                Refresh Page
-              </Button>
-              <Button
-                onClick={() => this.setState({ hasError: false })}
-                variant="outline"
-              >
-                Try Again
-              </Button>
-            </div>
-          </div>
+      return this.props.fallback || (
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
+          <h2 className="mb-2 text-lg font-semibold text-destructive">Something went wrong</h2>
+          <p className="text-sm text-muted-foreground">
+            {this.state.error?.message || "An unexpected error occurred"}
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+          >
+            Try again
+          </button>
         </div>
       )
     }

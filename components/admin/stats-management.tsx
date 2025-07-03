@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import {
   LineChart,
@@ -137,7 +137,7 @@ export function StatsManagement() {
   }, [timeRange])
 
   async function fetchStats() {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     setIsLoading(true)
 
     try {

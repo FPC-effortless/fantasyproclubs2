@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useCompetitions } from '../useCompetitions'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Competition } from '@/types/database'
 
 // Mock dependencies

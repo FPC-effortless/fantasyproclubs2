@@ -14,25 +14,23 @@ export function OnboardingWizard() {
   const [open, setOpen] = useState(false)
   const [teams, setTeams] = useState<{ id: string, name: string, crest_url?: string }[]>([])
   const [favoriteTeam, setFavoriteTeam] = useState<string | null>(null)
-  const [notifGranted, setNotifGranted] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
+    const supabase = createClient();
     const done = localStorage.getItem(ONBOARDING_KEY)
     if (!done) setOpen(true)
+    const fetchTeams = async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name, crest_url')
+        .order('name')
+      if (!error && data) {
+        setTeams(data)
+      }
+    }
     fetchTeams()
   }, [])
-
-  const fetchTeams = async () => {
-    const { data, error } = await supabase
-      .from('teams')
-      .select('id, name, crest_url')
-      .order('name')
-    if (!error && data) {
-      setTeams(data)
-    }
-  }
 
   const handleFinish = () => {
     localStorage.setItem(ONBOARDING_KEY, "1")
@@ -45,10 +43,7 @@ export function OnboardingWizard() {
 
   const handleNotifPermission = async () => {
     if ("Notification" in window && Notification.permission !== "granted") {
-      const perm = await Notification.requestPermission()
-      setNotifGranted(perm === "granted")
-    } else {
-      setNotifGranted(true)
+      await Notification.requestPermission()
     }
     setStep(step + 1)
   }

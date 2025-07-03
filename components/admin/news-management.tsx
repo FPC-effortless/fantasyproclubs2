@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -74,7 +74,7 @@ export function NewsManagement() {
   }, [])
 
   async function fetchNewsItems() {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       const { data, error } = await supabase
         .from('news')
@@ -97,7 +97,7 @@ export function NewsManagement() {
   }
 
   const handleAddNewsItem = async () => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       // Generate slug from title
       const slug = newItem.title
@@ -140,7 +140,7 @@ export function NewsManagement() {
   }
 
   const handleDeleteNewsItem = async (id: string) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       const { error } = await supabase
         .from('news')

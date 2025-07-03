@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Users, CheckCircle2, XCircle, Gamepad2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import {
   BarChart,
@@ -67,7 +67,7 @@ export function UpgradeStatistics() {
     },
   })
   const [isLoading, setIsLoading] = useState(true)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     loadStatistics()

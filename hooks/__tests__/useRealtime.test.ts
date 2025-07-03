@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useRealtime } from '../useRealtime'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { RealtimeChannel } from '@supabase/supabase-js'
 
 // Mock dependencies

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { toast } from "@/components/ui/use-toast"
 
@@ -42,7 +42,7 @@ export function UpgradeRequestModal({
 }: UpgradeRequestModalProps) {
   const [rejectionReason, setRejectionReason] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   if (!request) return null
 

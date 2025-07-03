@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Search, Users, Star, Check } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 

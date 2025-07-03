@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -52,7 +52,7 @@ export function GamingSettings() {
       verification_history: []
     }
   })
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     loadGamingSettings()

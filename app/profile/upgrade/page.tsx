@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { toast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
@@ -27,7 +27,7 @@ export default function UpgradeRequestPage() {
     experience_level: "",
   })
   const router = useRouter()
-  const supabase = createClient<Database>()
+  const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

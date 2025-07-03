@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import {
   Users,
@@ -79,7 +79,7 @@ export function TeamManagement() {
   const [activeTab, setActiveTab] = useState("details")
 
   useEffect(() => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     
     // Check if we're authenticated
     supabase.auth.getSession().then(({ data: { session }, error }) => {
@@ -101,7 +101,7 @@ export function TeamManagement() {
 
   async function fetchTeams() {
     setError(null)
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       console.log('Fetching teams...')
       const { data: teamsData, error: teamsError } = await supabase
@@ -145,7 +145,7 @@ export function TeamManagement() {
   }
 
   async function fetchManagers() {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       const { data: managersData, error: managersError } = await supabase
         .from('user_profiles')
@@ -166,7 +166,7 @@ export function TeamManagement() {
   }
 
   const handleAssignManager = async (teamId: string, managerId: string | null) => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       let error;
       if (managerId) {
@@ -205,7 +205,7 @@ export function TeamManagement() {
   }
 
   const handleAddTeam = async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       // Validate input
       if (!newTeam.name) {
@@ -263,7 +263,7 @@ export function TeamManagement() {
   }
 
   const handleEditTeam = async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       if (!selectedTeam) return
 
@@ -321,7 +321,7 @@ export function TeamManagement() {
   }
 
   const handleDeleteTeam = async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       if (!selectedTeam) return
 

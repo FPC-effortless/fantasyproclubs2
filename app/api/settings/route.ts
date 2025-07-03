@@ -1,14 +1,11 @@
-"use server"
-
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@/lib/supabase/server"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = await createClient()
 
     // Check authentication
     const { data: { session }, error: authError } = await supabase.auth.getSession()
@@ -83,7 +80,7 @@ export async function GET() {
       console.log("No system settings found, creating default settings")
       
       // Use service role client to bypass RLS for default settings creation
-      const serviceRoleClient = createClient(
+      const serviceRoleClient = createSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
       )
@@ -158,8 +155,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const supabase = await createClient()
 
     // Check authentication
     const { data: { session }, error: authError } = await supabase.auth.getSession()

@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useStats } from '../useStats'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import type { Player, Match } from '@/types/database'
 
 // Mock Supabase client

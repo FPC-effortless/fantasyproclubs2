@@ -1,9 +1,9 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Database } from '@/types/database'
 import { handleError, withErrorHandling } from '@/lib/error-handler'
 
 export class SecureDatabaseClient {
-  private supabase = createClientComponentClient<Database>()
+  private supabase = createClient()
 
   constructor() {
     // Log security event when client is created

@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Database } from '@/types/database'
 import {
   User,
@@ -15,7 +15,7 @@ import { handleError } from "@/lib/errors"
 import { ApiResponse, createSuccessResponse, createErrorResponse, ApiRequestConfig } from "@/lib/types/api"
 import { toast } from "@/components/ui/use-toast"
 
-const supabase = createClientComponentClient<Database>()
+const supabase = createClient()
 
 // User API
 export const userApi = {

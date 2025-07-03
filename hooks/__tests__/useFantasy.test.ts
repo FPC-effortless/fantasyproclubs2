@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useFantasy } from '../useFantasy'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { FantasyTeam } from '@/types/database'
 
 // Mock dependencies

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Loader2 } from 'lucide-react'
 import { z } from 'zod'
 
@@ -20,7 +20,7 @@ import { accountUpgradeSchema, type AccountUpgradeFormData } from '@/lib/validat
 export function AccountUpgradeForm() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   const {
     register,

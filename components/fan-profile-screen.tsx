@@ -49,7 +49,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // Import createClientComponentClient outside useEffect
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 
 // Helper function to create empty fan profile data
 function getEmptyFanProfileData(): FanProfileData {
@@ -176,7 +176,7 @@ export function FanProfileScreen() {
       try {
         setIsLoading(true)
 
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const {
           data: { user },
         } = await supabase.auth.getUser()
@@ -345,7 +345,7 @@ export function FanProfileScreen() {
 
   const handleProfileUpdate = async () => {
     try {
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) return
@@ -387,7 +387,7 @@ export function FanProfileScreen() {
 
   const handleLogout = async () => {
     try {
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       await supabase.auth.signOut()
       router.push("/login")
       toast({

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
 import { toast } from '@/hooks/use-toast'
 
@@ -33,7 +33,7 @@ export function MatchList() {
   }, [])
 
   async function fetchMatches() {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     try {
       const { data: matchesData, error: matchesError } = await supabase
         .from('matches')

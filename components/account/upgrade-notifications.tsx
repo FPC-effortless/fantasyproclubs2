@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 
 interface NotificationPreferences {
@@ -26,7 +26,7 @@ export function UpgradeNotifications() {
     estimatedTimeUpdates: true,
   })
   const [isLoading, setIsLoading] = useState(false)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     // Subscribe to real-time updates for upgrade requests

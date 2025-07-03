@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -62,7 +62,7 @@ export function UserManagement() {
   }, [])
 
   async function fetchUsers() {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       const { data: profilesData, error: profilesError } = await supabase
         .from('user_profiles')
@@ -101,7 +101,7 @@ export function UserManagement() {
   const handleSaveEdit = async () => {
     if (!editingUser) return
 
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       const { error: profileError } = await supabase
         .from('user_profiles')
@@ -141,7 +141,7 @@ export function UserManagement() {
   }
 
   const handleDeleteUser = async (userId: string) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     try {
       // First delete from user_profiles
       const { error: profileError } = await supabase

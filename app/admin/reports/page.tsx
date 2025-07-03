@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 import { toast } from "@/hooks/use-toast"
 import {
   BarChart,
@@ -93,7 +93,7 @@ export default function ReportsPage() {
 
   // Initialize Supabase client on mount
   useEffect(() => {
-    createClient().then(client => setSupabase(client));
+    setSupabase(createClient());
   }, []);
 
   const fetchReportsData = useCallback(async () => {

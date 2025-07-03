@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import {
   Card,
@@ -85,7 +85,7 @@ export function PendingActionsDashboard() {
   const [resolution, setResolution] = useState("")
   const [isResolving, setIsResolving] = useState(false)
 
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     fetchPendingActions()

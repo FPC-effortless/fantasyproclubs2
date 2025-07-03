@@ -34,7 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import { Check, X, Edit2, Search, Trophy, Filter, ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -148,7 +148,7 @@ export function MatchStatisticsManagement() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const itemsPerPage = 10
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     fetchCompetitions()

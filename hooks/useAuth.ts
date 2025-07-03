@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { useRouter } from 'next/navigation'
 import type { User } from '@/types/database'
 
@@ -7,7 +7,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
   const router = useRouter()
 
   useEffect(() => {

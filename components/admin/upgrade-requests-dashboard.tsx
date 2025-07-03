@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { UpgradeRequestModal } from "./upgrade-request-modal"
 import { toast } from "@/components/ui/use-toast"
@@ -62,7 +62,7 @@ export function UpgradeRequestsDashboard() {
     search: "",
   })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     loadRequests()

@@ -17,8 +17,8 @@ import { PlatformBadge } from "@/components/gaming-platform/platform-badge"
 import { PlatformSelector } from "@/components/gaming-platform/platform-selector"
 import { toast } from "@/components/ui/use-toast"
 import { LogoutButton } from "@/components/auth/logout-button"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client"
 
 interface PlayerProfileData {
   id: string
@@ -432,7 +432,7 @@ export function PlayerProfileScreen() {
         setIsLoading(true)
         
         // Get current user from Supabase auth
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {

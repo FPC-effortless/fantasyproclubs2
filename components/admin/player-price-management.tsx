@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Database } from '@/lib/database.types'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -77,7 +77,7 @@ export default function PlayerPriceManagement() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [editedPrices, setEditedPrices] = useState<Record<string, number>>({})
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     loadCompetitions()

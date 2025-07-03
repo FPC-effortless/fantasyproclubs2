@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { Database } from '@/types/database'
 import { Player, Match } from '@/types/database'
 
 export function useStats() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const getPlayerStats = async (playerId: string) => {
     try {

@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/lib/database.types'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 
 interface Team {
   id: string
@@ -62,7 +62,7 @@ export class SwissDrawEngine {
   private drawLog: string[] = []
 
   constructor() {
-    this.supabase = createClientComponentClient<Database>()
+    this.supabase = createClient()
   }
 
   private log(message: string) {

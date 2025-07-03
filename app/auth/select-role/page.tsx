@@ -4,12 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Trophy, Shield, Gamepad2, Heart } from 'lucide-react'
+import { Trophy, Users, Shield, Gamepad2, Heart, BarChart3 } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import { createClient } from '@/lib/supabase/client'
-import { Loading } from '@/components/ui/loading'
-
-type UserRole = 'fan' | 'player' | 'manager'
+import type { UserRole } from '@/types/auth'
 
 interface RoleOption {
   id: UserRole
@@ -21,19 +19,6 @@ interface RoleOption {
 }
 
 const roleOptions: RoleOption[] = [
-  {
-    id: 'fan',
-    title: 'Fantasy Football Fan',
-    description: 'Create fantasy teams, join leagues, and compete with friends',
-    icon: Heart,
-    color: 'from-blue-500 to-blue-600',
-    features: [
-      'Create and manage fantasy teams',
-      'Join fantasy leagues',
-      'Track player statistics',
-      'Compete in tournaments'
-    ]
-  },
   {
     id: 'player',
     title: 'Pro Club Player',
@@ -139,90 +124,86 @@ export default function SelectRolePage() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-3xl"></div>
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4">
-        {isLoading ? (
-          <Loading size="lg" />
-        ) : (
-          <div className="w-full max-w-4xl space-y-8">
-            {/* Header */}
-            <div className="text-center space-y-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
-                <Trophy className="w-10 h-10 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent">
-                  Choose Your Path
-                </h1>
-                <p className="mt-3 text-gray-400 text-lg">
-                  Select how you want to experience Fantasy Pro Clubs
-                </p>
-              </div>
+        <div className="w-full max-w-4xl space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
+              <Trophy className="w-10 h-10 text-white" />
             </div>
-
-            {/* Role Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {roleOptions.map((role) => {
-                const IconComponent = role.icon
-                const isSelected = selectedRole === role.id
-                
-                return (
-                  <Card
-                    key={role.id}
-                    className={`
-                      bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-lg 
-                      border-2 transition-all duration-300 cursor-pointer
-                      ${isSelected 
-                        ? 'border-green-500 shadow-2xl shadow-green-500/20 scale-105' 
-                        : 'border-gray-700/30 hover:border-gray-600/50 hover:scale-102'
-                      }
-                    `}
-                    onClick={() => setSelectedRole(role.id)}
-                  >
-                    <div className="p-6 space-y-4">
-                      <div className={`w-16 h-16 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center shadow-lg`}>
-                        <IconComponent className="w-8 h-8 text-white" />
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-xl font-bold text-green-100 mb-2">{role.title}</h3>
-                        <p className="text-gray-400 text-sm mb-4">{role.description}</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        {role.features.map((feature, index) => (
-                          <div key={index} className="flex items-center text-sm">
-                            <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${role.color} mr-2`} />
-                            <span className="text-gray-300">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {isSelected && (
-                        <div className="absolute top-4 right-4">
-                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                )
-              })}
-            </div>
-
-            {/* Continue Button */}
-            <div className="flex justify-center pt-6">
-              <Button
-                onClick={handleRoleSelection}
-                disabled={!selectedRole || isLoading}
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white px-12 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Saving...' : 'Continue to Team Selection'}
-              </Button>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent">
+                Choose Your Path
+              </h1>
+              <p className="mt-3 text-gray-400 text-lg">
+                Select how you want to experience Fantasy Pro Clubs
+              </p>
             </div>
           </div>
-        )}
+
+          {/* Role Cards */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {roleOptions.map((role) => {
+              const IconComponent = role.icon
+              const isSelected = selectedRole === role.id
+              
+              return (
+                <Card
+                  key={role.id}
+                  className={`
+                    bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-lg 
+                    border-2 transition-all duration-300 cursor-pointer
+                    ${isSelected 
+                      ? 'border-green-500 shadow-2xl shadow-green-500/20 scale-105' 
+                      : 'border-gray-700/30 hover:border-gray-600/50 hover:scale-102'
+                    }
+                  `}
+                  onClick={() => setSelectedRole(role.id)}
+                >
+                  <div className="p-6 space-y-4">
+                    <div className={`w-16 h-16 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-xl font-bold text-green-100 mb-2">{role.title}</h3>
+                      <p className="text-gray-400 text-sm mb-4">{role.description}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      {role.features.map((feature, index) => (
+                        <div key={index} className="flex items-center text-sm">
+                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${role.color} mr-2`} />
+                          <span className="text-gray-300">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {isSelected && (
+                      <div className="absolute top-4 right-4">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )
+            })}
+          </div>
+
+          {/* Continue Button */}
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={handleRoleSelection}
+              disabled={!selectedRole || isLoading}
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {isLoading ? 'Processing...' : 'Continue'}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

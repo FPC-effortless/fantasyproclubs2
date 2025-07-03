@@ -73,3 +73,5 @@ export interface Player {
 }
 
 export type NavigationTab = "home" | "competitions" | "fantasy" | "profile"
+
+export * from './auth';

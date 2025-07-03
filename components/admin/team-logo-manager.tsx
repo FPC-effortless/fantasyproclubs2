@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -21,7 +21,7 @@ interface TeamLogoManagerProps {
 export function TeamLogoManager({ teams, onTeamUpdate }: TeamLogoManagerProps) {
   const [uploadingTeamId, setUploadingTeamId] = useState<string | null>(null)
   const [logoFiles, setLogoFiles] = useState<{ [key: string]: File }>({})
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const handleFileChange = (teamId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

@@ -1,7 +1,7 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from "@/lib/supabase/client"
 import type { Notification } from '@/types/database'
 
-const supabase = createClientComponentClient()
+const supabase = createClient()
 
 /**
  * Create a notification
