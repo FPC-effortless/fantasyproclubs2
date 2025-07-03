@@ -30,8 +30,9 @@ const newsList = [
   ] },
 ]
 
-export default function NewsArticlePage({ params }: { params: { id: string } }) {
-  const article = newsList.find((n) => n.id === params.id) || newsList[0]
+export default async function NewsArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const article = newsList.find((n) => n.id === id) || newsList[0]
   return (
     <LayoutWrapper>
       <div className="min-h-screen bg-black text-white p-4">

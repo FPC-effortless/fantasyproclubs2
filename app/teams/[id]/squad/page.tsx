@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function TeamSquadPage({ params }: { params: { id: string } }) {
+export default async function TeamSquadPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   return (
     <LayoutWrapper>
       <div className="min-h-screen bg-black text-white p-4">

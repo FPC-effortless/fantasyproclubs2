@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LeagueDetailsPage({ params }: { params: { id: string } }) {
+export default async function LeagueDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   return (
     <LayoutWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pb-16 relative overflow-hidden">
