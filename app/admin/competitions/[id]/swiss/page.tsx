@@ -1,11 +1,12 @@
 import ClientWrapper from './components/ClientWrapper'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function SwissModelPage({ params }: PageProps) {
-  return <ClientWrapper competitionId={params.id} />
+  const { id } = await params
+  return <ClientWrapper competitionId={id} />
 } 

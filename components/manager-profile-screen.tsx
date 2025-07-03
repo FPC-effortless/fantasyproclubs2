@@ -182,7 +182,7 @@ export function ManagerProfileScreen() {
       try {
         setIsLoading(true)
         
-        const { createClientComponentClient } = await import('@supabase/auth-helpers-nextjs')
+        const { createClient } = await import('@/lib/supabase/client')
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         
