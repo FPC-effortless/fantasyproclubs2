@@ -7,7 +7,6 @@ import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
 
 type Tables = Database['public']['Tables']
-type TeamRow = Tables['teams']['Row']
 type SwissConfigRow = Tables['swiss_model_configs']['Row']
 
 interface Team {
