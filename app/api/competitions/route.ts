@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { NextRequest, NextResponse } from "next/server"
-import type { Database } from "@/lib/database.types"
+import { NextResponse } from "next/server"
 import { executeQuery, handleSupabaseQuery } from '@/lib/utils/supabase-query'
 
 // GET /api/competitions - Get all competitions or filter by query params

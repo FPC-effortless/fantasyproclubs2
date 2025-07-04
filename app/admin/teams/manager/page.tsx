@@ -1,10 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { createClient } from '@/lib/supabase/client'
 import { AdminLayout } from '@/components/admin/layout'
@@ -13,7 +11,6 @@ export default function TeamManagerPage() {
   const [teams, setTeams] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
   const { toast } = useToast()
   const supabase = createClient()
 
