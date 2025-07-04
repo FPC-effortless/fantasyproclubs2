@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Database } from '@/lib/database.types'
 import PlayerPriceManagement from '@/components/admin/player-price-management'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/use-toast'
@@ -69,7 +68,7 @@ export default function FantasyManagementPage() {
       
       // Test 4: Try reading from fantasy_player_stats
       console.log('Test 4: Testing read access to fantasy_player_stats...')
-      const { data: readTest, error: readError } = await supabase
+      const { data: _readTest, error: readError } = await supabase
         .from('fantasy_player_stats')
         .select('*')
         .limit(1)

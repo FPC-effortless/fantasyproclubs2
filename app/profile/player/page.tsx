@@ -1,4 +1,4 @@
-import { PlayerProfileScreen } from "@/components/player-profile-screen-v2"
+import { PlayerProfileScreen } from "@/components/player-profile-screen"
 
 export default function PlayerProfilePage() {
   return <PlayerProfileScreen />

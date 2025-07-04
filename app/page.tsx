@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Search, Bell, Clock, User, Star, Trophy, TrendingUp, Users, Target, ArrowRight } from "lucide-react"
+import { Search, Bell, Clock, Trophy, Users, Target, ArrowRight } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MatchCard } from "@/components/match/match-card"
@@ -169,19 +169,40 @@ function FeaturePreviewSection() {
 }
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState("fixtures")
   const [matches, setMatches] = useState<Match[]>([])
   const [featuredMatch, setFeaturedMatch] = useState<FeaturedMatch | null>(null)
   const [news, setNews] = useState<NewsArticle[]>([])
   const [competitions, setCompetitions] = useState<Competition[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [favoriteClub, setFavoriteClub] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null)
   
   const { supabase } = useSupabase()
+
+  const loadPageData = async () => {
+    try {
+      setLoading(true)
+      
+      // Load data with individual error handling
+      await Promise.allSettled([
+        loadMatches().catch(err => console.error('Error loading matches:', err)),
+        loadFeaturedMatch().catch(err => console.error('Error loading featured match:', err)),
+        loadNews().catch(err => console.error('Error loading news:', err)),
+        loadCompetitions().catch(err => console.error('Error loading competitions:', err))
+      ])
+    } catch (error: any) {
+      console.error('Error loading page data:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load page data. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const checkAuthAndLoadData = useCallback(async () => {
     try {
@@ -203,31 +224,6 @@ export default function HomePage() {
     setFavoriteClub(club)
     checkAuthAndLoadData()
   }, [checkAuthAndLoadData])
-
-  const loadPageData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      // Load data with individual error handling
-      await Promise.allSettled([
-        loadMatches().catch(err => console.error('Error loading matches:', err)),
-        loadFeaturedMatch().catch(err => console.error('Error loading featured match:', err)),
-        loadNews().catch(err => console.error('Error loading news:', err)),
-        loadCompetitions().catch(err => console.error('Error loading competitions:', err))
-      ])
-    } catch (error: any) {
-      console.error('Error loading page data:', error)
-      setError(error.message || 'Failed to load page data')
-      toast({
-        title: "Error",
-        description: "Failed to load page data. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const loadMatches = async () => {
     try {

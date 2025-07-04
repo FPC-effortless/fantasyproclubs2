@@ -65,8 +65,6 @@
     "next": "15.2.4",
     "next-pwa": "latest",
     "next-themes": "^0.4.4",
-    "preact": "^10.26.9",
-    "preact-compat": "^3.19.0",
     "react": "^18",
     "react-day-picker": "^9.7.0",
     "react-dnd": "^16.0.1",

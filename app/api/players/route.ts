@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-import type { Database } from '@/types/database'
+import { NextRequest, NextResponse } from "next/server"
+import type { Database } from "@/lib/database.types"
 
 // GET /api/players - Get all players or filter by query params
 export async function GET(request: Request) {
@@ -14,7 +13,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     let query = supabase.from('players').select(`
       *,
       user:user_id(
@@ -65,7 +64,7 @@ export async function GET(request: Request) {
 // POST /api/players - Create a new player
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -106,7 +105,7 @@ export async function POST(request: Request) {
 // PATCH /api/players - Update a player
 export async function PATCH(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
     const { id, ...updates } = json
 
@@ -161,7 +160,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Player ID is required' }, { status: 400 })
     }
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {

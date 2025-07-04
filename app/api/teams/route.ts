@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
 import { executeQuery, handleSupabaseQuery } from '@/lib/utils/supabase-query'
@@ -16,7 +15,7 @@ export async function GET(request: Request) {
     const managerId = searchParams.get('manager_id')
     const search = searchParams.get('search')
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
 
     const { data, count } = await executeQuery(
       supabase,
@@ -56,7 +55,7 @@ export async function GET(request: Request) {
 // POST /api/teams - Create a new team
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -93,7 +92,7 @@ export async function POST(request: Request) {
 // PATCH /api/teams - Update a team
 export async function PATCH(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
     const { id, ...updates } = json
 
@@ -158,7 +157,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Team ID is required' }, { status: 400 })
     }
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {

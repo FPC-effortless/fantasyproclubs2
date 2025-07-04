@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from 'next/headers';
 import { EmailService } from '@/lib/email/email-service';
 import crypto from 'crypto';
 
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
 
     // Create user with email confirmation disabled
     const { data: authData, error: authError } = await supabase.auth.signUp({

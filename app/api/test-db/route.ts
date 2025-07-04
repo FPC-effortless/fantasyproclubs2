@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     const results: Record<string, any> = {}
 
     // Test each table

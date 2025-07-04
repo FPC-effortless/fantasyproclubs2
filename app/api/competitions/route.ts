@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-import type { Database } from '@/types/database'
+import { NextRequest, NextResponse } from "next/server"
+import type { Database } from "@/lib/database.types"
 import { executeQuery, handleSupabaseQuery } from '@/lib/utils/supabase-query'
 
 // GET /api/competitions - Get all competitions or filter by query params
@@ -15,7 +14,7 @@ export async function GET(request: Request) {
     const status = searchParams.get('status')
     const search = searchParams.get('search')
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
 
     const { data, count } = await executeQuery(
       supabase,
@@ -63,7 +62,7 @@ export async function GET(request: Request) {
 // POST /api/competitions - Create a new competition
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -122,7 +121,7 @@ export async function POST(request: Request) {
 // PATCH /api/competitions - Update a competition
 export async function PATCH(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
     const { id, ...updates } = json
 
@@ -187,7 +186,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Competition ID is required' }, { status: 400 })
     }
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {

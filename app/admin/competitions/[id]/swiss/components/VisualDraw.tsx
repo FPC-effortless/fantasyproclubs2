@@ -33,7 +33,7 @@ interface VisualDrawProps {
   onBack: () => void
 }
 
-export default function VisualDraw({ competitionId, onComplete, onBack }: VisualDrawProps) {
+export default function VisualDraw({ competitionId, onComplete, onBack: _onBack }: VisualDrawProps) {
   const [teams, setTeams] = useState<Team[]>([])
   const [config, setConfig] = useState<SwissConfigRow | null>(null)
   const [matches, setMatches] = useState<Match[]>([])

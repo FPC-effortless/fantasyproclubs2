@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
 
@@ -14,7 +13,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     let query = supabase.from('user_profiles').select(`
       *,
       team:players!inner(
@@ -59,7 +58,7 @@ export async function GET(request: Request) {
 // POST /api/user-profiles - Create a new user profile
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -101,7 +100,7 @@ export async function POST(request: Request) {
 // PATCH /api/user-profiles - Update a user profile
 export async function PATCH(request: Request) {
   try {
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     const json = await request.json()
     const { id, ...updates } = json
 
@@ -148,7 +147,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
     }
 
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {

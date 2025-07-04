@@ -18,7 +18,6 @@ import { PlatformSelector } from "@/components/gaming-platform/platform-selector
 import { toast } from "@/components/ui/use-toast"
 import { LogoutButton } from "@/components/auth/logout-button"
 import { createClient } from "@/lib/supabase/client"
-import { createClient } from "@/lib/supabase/client"
 
 interface PlayerProfileData {
   id: string

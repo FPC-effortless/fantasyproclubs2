@@ -1,5 +1,3 @@
-import { AdminNav } from "@/components/admin/admin-nav"
-import { toast } from "@/hooks/use-toast"
 import { createClient } from '@/lib/supabase/server'
 import { AdminLayoutClient } from './admin-layout-client'
 

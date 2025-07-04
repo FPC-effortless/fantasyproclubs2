@@ -1,0 +1,266 @@
+/* Reports Page Styles */
+
+/* Layout and container styles */
+.container {
+  @apply space-y-6;
+}
+
+.header {
+  @apply flex items-center justify-between;
+}
+
+.title {
+  @apply text-3xl font-bold;
+}
+
+.headerActions {
+  @apply flex items-center gap-4;
+}
+
+.tabsContainer {
+  @apply space-y-4;
+}
+
+.tabContent {
+  @apply space-y-4;
+}
+
+/* Loading state */
+.loadingContainer {
+  @apply flex items-center justify-center h-64;
+}
+
+.loadingContent {
+  @apply text-center;
+}
+
+.loadingSpinner {
+  @apply h-8 w-8 animate-spin mx-auto mb-4 text-blue-500;
+}
+
+/* Card grid layouts */
+.overviewGrid {
+  @apply grid gap-4 md:grid-cols-2 lg:grid-cols-4;
+}
+
+.twoColumnGrid {
+  @apply grid gap-4 md:grid-cols-2;
+}
+
+/* Card header styles */
+.cardHeader {
+  @apply flex flex-row items-center justify-between space-y-0 pb-2;
+}
+
+.cardTitle {
+  @apply text-sm font-medium;
+}
+
+.cardIcon {
+  @apply h-4 w-4 text-muted-foreground;
+}
+
+/* Metric display styles */
+.metricValue {
+  @apply text-2xl font-bold;
+}
+
+.trendContainer {
+  @apply flex items-center text-xs;
+}
+
+.trendIcon {
+  @apply h-3 w-3;
+}
+
+.trendIconPositive {
+  @apply h-3 w-3 text-green-500;
+}
+
+.trendIconNegative {
+  @apply h-3 w-3 text-red-500;
+}
+
+.trendIconNeutral {
+  @apply h-3 w-3 text-gray-500;
+}
+
+.trendText {
+  @apply ml-1;
+}
+
+.trendTextPositive {
+  @apply text-green-600;
+}
+
+.trendTextNegative {
+  @apply text-red-600;
+}
+
+.trendTextNeutral {
+  @apply text-gray-600;
+}
+
+/* Platform distribution styles */
+.platformList {
+  @apply space-y-2;
+}
+
+.platformItem {
+  @apply flex items-center justify-between text-sm;
+}
+
+/* User type distribution styles */
+.userTypeList {
+  @apply space-y-4;
+}
+
+.userTypeItem {
+  @apply flex items-center justify-between;
+}
+
+.userTypeInfo {
+  @apply flex items-center space-x-2;
+}
+
+.colorIndicator {
+  @apply w-3 h-3 rounded-full;
+}
+
+.userTypeName {
+  @apply font-medium;
+}
+
+.userTypeStats {
+  @apply text-right;
+}
+
+.userTypeCount {
+  @apply font-bold;
+}
+
+.userTypePercentage {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Account upgrade styles */
+.upgradeList {
+  @apply space-y-3;
+}
+
+.upgradeItem {
+  @apply flex items-center justify-between p-3 rounded-lg bg-muted/50;
+}
+
+.upgradeName {
+  @apply font-medium;
+}
+
+/* Competition activity styles */
+.competitionList {
+  @apply space-y-4;
+}
+
+.competitionItem {
+  @apply flex items-center justify-between p-4 rounded-lg border;
+}
+
+.competitionInfo h4 {
+  @apply font-semibold;
+}
+
+.competitionInfo p {
+  @apply text-sm text-muted-foreground;
+}
+
+.competitionStats {
+  @apply text-right;
+}
+
+.competitionMatchCount {
+  @apply text-2xl font-bold;
+}
+
+.competitionMatchLabel {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Competition types styles */
+.competitionTypesList {
+  @apply space-y-3;
+}
+
+.competitionTypeItem {
+  @apply flex items-center justify-between p-3 rounded-lg bg-muted/50;
+}
+
+.competitionTypeInfo {
+  @apply flex items-center space-x-2;
+}
+
+.competitionTypeName {
+  @apply font-medium;
+}
+
+/* System health styles */
+.healthList {
+  @apply space-y-4;
+}
+
+.healthItem {
+  @apply flex items-center justify-between;
+}
+
+.healthLabel {
+  @apply text-sm font-medium;
+}
+
+/* Color classes for indicators */
+.colorBlue {
+  @apply bg-blue-500;
+}
+
+.colorEmerald {
+  @apply bg-emerald-500;
+}
+
+.colorAmber {
+  @apply bg-amber-400;
+}
+
+.colorOrange {
+  @apply bg-orange-500;
+}
+
+.colorViolet {
+  @apply bg-violet-500;
+}
+
+.colorGreen {
+  @apply bg-green-400;
+}
+
+/* Badge variations */
+.badgeGreen {
+  @apply bg-green-500;
+}
+
+.badgeBlue {
+  @apply bg-blue-500;
+}
+
+/* Chart container */
+.chartContainer {
+  width: 100%;
+  height: 250px;
+}
+
+.chartContainerLarge {
+  width: 100%;
+  height: 300px;
+}
+
+/* Button icon spacing */
+.buttonIcon {
+  @apply mr-2 h-4 w-4;
+}

@@ -14,13 +14,7 @@ import {
   Calendar,
   Download,
   Filter,
-  TrendingUp,
   Activity,
-  Target,
-  Award,
-  UserCheck,
-  Clock,
-  Zap,
   ArrowUp,
   ArrowDown,
   Minus,
@@ -40,6 +34,7 @@ import {
   Cell,
 } from "recharts"
 import { SupabaseClient } from "@supabase/supabase-js"
+import styles from "./reports.module.css"
 
 interface ReportsData {
   overview: {
@@ -89,7 +84,7 @@ export default function ReportsPage() {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [data, setData] = useState<ReportsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [_error, _setError] = useState<string | null>(null)
 
   // Initialize Supabase client on mount
   useEffect(() => {
@@ -324,8 +319,8 @@ export default function ReportsPage() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingText}>
           <Activity className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-500" />
           <p>Loading reports data...</p>
         </div>
@@ -334,26 +329,26 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-        <div className="flex items-center gap-4">
+    <div className={styles.pageContainer}>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Reports & Analytics</h1>
+        <div className={styles.headerActions}>
           <Button variant="outline" size="sm" onClick={() => fetchReportsData()}>
-            <Activity className="mr-2 h-4 w-4" />
+            <Activity className={styles.buttonIcon} />
             Refresh
           </Button>
           <Button variant="outline" size="sm">
-            <Filter className="mr-2 h-4 w-4" />
+            <Filter className={styles.buttonIcon} />
             Filter
           </Button>
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="mr-2 h-4 w-4" />
+            <Download className={styles.buttonIcon} />
             Export
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs defaultValue="overview" className={styles.tabsContainer}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -361,16 +356,16 @@ export default function ReportsPage() {
           <TabsTrigger value="competitions">Competitions</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <TabsContent value="overview" className={styles.tabContent}>
+          <div className={styles.gridLayout}>
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <CardHeader className={styles.cardHeader}>
+                <CardTitle className={styles.cardTitleSmall}>Total Users</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{data.overview.totalUsers.toLocaleString()}</div>
-                <div className={`flex items-center text-xs ${getTrendColor(data.overview.userGrowth)}`}>
+                <div className={styles.metricValue}>{data.overview.totalUsers.toLocaleString()}</div>
+                <div className={`${styles.trendIndicator} ${getTrendColor(data.overview.userGrowth)}`}>
                   {getTrendIcon(data.overview.userGrowth)}
                   <span className="ml-1">
                     {Math.abs(data.overview.userGrowth).toFixed(1)}% from last month
@@ -380,13 +375,13 @@ export default function ReportsPage() {
             </Card>
             
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Matches</CardTitle>
+              <CardHeader className={styles.cardHeader}>
+                <CardTitle className={styles.cardTitleSmall}>Active Matches</CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{data.overview.activeMatches}</div>
-                <div className={`flex items-center text-xs ${getTrendColor(data.overview.matchesGrowth)}`}>
+                <div className={styles.metricValue}>{data.overview.activeMatches}</div>
+                <div className={`${styles.trendIndicator} ${getTrendColor(data.overview.matchesGrowth)}`}>
                   {getTrendIcon(data.overview.matchesGrowth)}
                   <span className="ml-1">
                     {Math.abs(data.overview.matchesGrowth).toFixed(1)}% from last month
@@ -396,8 +391,8 @@ export default function ReportsPage() {
             </Card>
             
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Competitions</CardTitle>
+              <CardHeader className={styles.cardHeader}>
+                <CardTitle className={styles.cardTitleSmall}>Active Competitions</CardTitle>
                 <Trophy className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -418,7 +413,7 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {data.overview.platformDistribution.slice(0, 2).map((platform, index) => (
+                  {data.overview.platformDistribution.slice(0, 2).map((platform, _index) => (
                     <div key={platform.platform} className="flex items-center justify-between text-sm">
                       <span>{platform.platform}</span>
                       <Badge variant="secondary">{platform.percentage}%</Badge>
@@ -466,7 +461,7 @@ export default function ReportsPage() {
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {data.overview.platformDistribution.map((entry, index) => (
+                      {data.overview.platformDistribution.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -511,10 +506,10 @@ export default function ReportsPage() {
                 <CardDescription>Status of account upgrade requests</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {data.userStats.accountUpgrades.map((upgrade, index) => (
-                    <div key={upgrade.status} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <span className="font-medium">{upgrade.status}</span>
+                <div className={styles.upgradeRequestList}>
+                  {data.userStats.accountUpgrades.map((upgrade, _index) => (
+                    <div key={upgrade.status} className={styles.upgradeRequestItem}>
+                      <span className={styles.upgradeRequestStatus}>{upgrade.status}</span>
                       <Badge 
                         variant={upgrade.status === 'Pending' ? 'default' : 
                                 upgrade.status === 'Approved' ? 'default' : 'secondary'}
@@ -547,8 +542,8 @@ export default function ReportsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="matches" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+        <TabsContent value="matches" className={styles.matchesTab}>
+          <div className={styles.matchesGrid}>
             <Card>
               <CardHeader>
                 <CardTitle>Matches by Month</CardTitle>
@@ -586,7 +581,7 @@ export default function ReportsPage() {
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {data.matchStats.matchOutcomes.map((entry, index) => (
+                      {data.matchStats.matchOutcomes.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -603,16 +598,16 @@ export default function ReportsPage() {
               <CardDescription>Matches and teams per competition</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {data.matchStats.competitionActivity.map((comp, index) => (
-                  <div key={comp.name} className="flex items-center justify-between p-4 rounded-lg border">
+              <div className={styles.competitionActivity}>
+                {data.matchStats.competitionActivity.map((comp, _index) => (
+                  <div key={comp.name} className={styles.competitionItem}>
                     <div>
-                      <h4 className="font-semibold">{comp.name}</h4>
-                      <p className="text-sm text-muted-foreground">{comp.teams} teams participating</p>
+                      <h4 className={styles.competitionName}>{comp.name}</h4>
+                      <p className={styles.competitionInfo}>{comp.teams} teams participating</p>
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold">{comp.matches}</div>
-                      <div className="text-sm text-muted-foreground">matches</div>
+                    <div className={styles.competitionStats}>
+                      <div className={styles.competitionValue}>{comp.matches}</div>
+                      <div className={styles.competitionLabel}>matches</div>
                     </div>
                   </div>
                 ))}
@@ -621,22 +616,22 @@ export default function ReportsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="competitions" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+        <TabsContent value="competitions" className={styles.competitionsTab}>
+          <div className={styles.competitionsGrid}>
             <Card>
               <CardHeader>
                 <CardTitle>Competition Types</CardTitle>
                 <CardDescription>Distribution of competition formats</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className={styles.competitionTypeList}>
                   {data.competitionStats.competitionTypes.map((type, index) => (
-                    <div key={type.type} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <div className="flex items-center space-x-2">
+                    <div key={type.type} className={styles.competitionTypeItem}>
+                      <div className={styles.competitionTypeContent}>
                         <div 
-                          className={`w-3 h-3 rounded-full ${getColorClass(index)}`}
+                          className={`${styles.colorIndicator} ${getColorClass(index)}`}
                         />
-                        <span className="font-medium">{type.type}</span>
+                        <span className={styles.competitionTypeName}>{type.type}</span>
                       </div>
                       <Badge variant="secondary">{type.count}</Badge>
                     </div>
@@ -651,22 +646,22 @@ export default function ReportsPage() {
                 <CardDescription>Platform performance metrics</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Database Response</span>
-                    <Badge variant="default" className="bg-green-500">Excellent</Badge>
+                <div className={styles.systemHealth}>
+                  <div className={styles.systemHealthItem}>
+                    <span className={styles.systemHealthLabel}>Database Response</span>
+                    <Badge variant="default" className={styles.systemHealthBadgeGreen}>Excellent</Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">API Performance</span>
-                    <Badge variant="default" className="bg-green-500">Optimal</Badge>
+                  <div className={styles.systemHealthItem}>
+                    <span className={styles.systemHealthLabel}>API Performance</span>
+                    <Badge variant="default" className={styles.systemHealthBadgeGreen}>Optimal</Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">User Engagement</span>
-                    <Badge variant="default" className="bg-blue-500">High</Badge>
+                  <div className={styles.systemHealthItem}>
+                    <span className={styles.systemHealthLabel}>User Engagement</span>
+                    <Badge variant="default" className={styles.systemHealthBadgeBlue}>High</Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">System Uptime</span>
-                    <Badge variant="default" className="bg-green-500">99.8%</Badge>
+                  <div className={styles.systemHealthItem}>
+                    <span className={styles.systemHealthLabel}>System Uptime</span>
+                    <Badge variant="default" className={styles.systemHealthBadgeGreen}>99.8%</Badge>
                   </div>
                 </div>
               </CardContent>

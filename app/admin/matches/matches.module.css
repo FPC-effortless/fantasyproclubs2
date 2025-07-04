@@ -1,0 +1,137 @@
+/* Container and Background */
+.container {
+  @apply min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pb-16 relative overflow-hidden;
+}
+
+.backgroundOverlay {
+  @apply absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-green-800/10;
+}
+
+.backgroundBlobLeft {
+  @apply absolute top-0 left-0 w-96 h-96 bg-green-600/5 rounded-full blur-3xl;
+}
+
+.backgroundBlobRight {
+  @apply absolute bottom-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-3xl;
+}
+
+/* Header */
+.header {
+  @apply relative z-10 bg-gradient-to-r from-green-800 to-green-900 backdrop-blur-lg border-b border-green-700/20 p-6 shadow-xl;
+}
+
+.headerContent {
+  @apply max-w-7xl mx-auto;
+}
+
+.headerFlex {
+  @apply flex items-center gap-4;
+}
+
+.headerIcon {
+  @apply w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg;
+}
+
+.headerTitle {
+  @apply text-3xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent;
+}
+
+.headerDescription {
+  @apply text-green-200/80;
+}
+
+/* Main Content */
+.mainContent {
+  @apply relative z-10 container mx-auto px-4 py-8 max-w-7xl;
+}
+
+/* Stats Grid */
+.statsGrid {
+  @apply grid grid-cols-1 md:grid-cols-4 gap-6 mb-8;
+}
+
+.statsCard {
+  @apply bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/30 shadow-xl;
+}
+
+.statsCardContent {
+  @apply p-6 text-center;
+}
+
+.statsIcon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.statsIconGreen {
+  @apply w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.statsIconBlue {
+  @apply w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.statsIconPurple {
+  @apply w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.statsIconOrange {
+  @apply w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.statsValue {
+  @apply text-2xl font-bold mb-1;
+}
+
+.statsValueGreen {
+  @apply text-2xl font-bold text-green-400 mb-1;
+}
+
+.statsValueBlue {
+  @apply text-2xl font-bold text-blue-400 mb-1;
+}
+
+.statsValuePurple {
+  @apply text-2xl font-bold text-purple-400 mb-1;
+}
+
+.statsValueOrange {
+  @apply text-2xl font-bold text-orange-400 mb-1;
+}
+
+.statsLabel {
+  @apply text-gray-400 text-sm;
+}
+
+/* Management Card */
+.managementCard {
+  @apply bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/30 shadow-xl;
+}
+
+.managementHeader {
+  @apply flex items-center justify-between;
+}
+
+.managementTitleSection {
+  @apply flex flex-col;
+}
+
+.managementTitle {
+  @apply text-green-100 text-xl flex items-center gap-2;
+}
+
+.managementDescription {
+  @apply text-gray-400 mt-2;
+}
+
+.managementBadge {
+  @apply border-green-600/50 text-green-400 bg-green-600/20;
+}
+
+/* Icon Styles */
+.iconWhite {
+  @apply w-6 h-6 text-white;
+}
+
+.iconSmall {
+  @apply w-5 h-5 text-green-400;
+}

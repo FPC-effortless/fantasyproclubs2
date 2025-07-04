@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'react-hot-toast'
 import { useParams } from 'next/navigation'
-import { Database } from '@/lib/database.types'
 
 interface SwissConfig {
   id: string

@@ -45,6 +45,7 @@ export default function DrawStage({
       }, 3000)
       return () => clearTimeout(timer)
     }
+    return () => {} // Return empty cleanup function for other paths
   }, [isSelecting, eligibleOpponents, onOpponentSelected])
 
   return (
