@@ -6,8 +6,6 @@ import { Database } from '@/types/database'
 import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
 
-type Tables = Database['public']['Tables']
-
 interface Team {
   id: string
   name: string
