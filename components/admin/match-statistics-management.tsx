@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import {
   Table,
   TableBody,
@@ -8,36 +8,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card"
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui';
 import { Check, X, Edit2, Search, Trophy, Filter, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string
@@ -74,68 +67,6 @@ interface PlayerStats {
   status: 'pending' | 'approved' | 'rejected'
 }
 
-interface Database {
-  public: {
-    Tables: {
-      matches: {
-        Row: {
-          id: string
-          match_date: string
-          home_team_id: string
-          away_team_id: string
-          competition_id: string
-        }
-      }
-      player_match_stats: {
-        Row: {
-          id: string
-          match_id: string
-          player_id: string
-          team_id: string
-          goals: number
-          assists: number
-          minutes_played: number
-          rating: number
-          status: 'pending' | 'approved' | 'rejected'
-          created_at: string
-        }
-      }
-      teams: {
-        Row: {
-          id: string
-          name: string
-        }
-      }
-      players: {
-        Row: {
-          id: string
-          user_id: string
-          team_id: string
-        }
-      }
-      competitions: {
-        Row: {
-          id: string
-          name: string
-        }
-      }
-    }
-  }
-  auth: {
-    Tables: {
-      users: {
-        Row: {
-          id: string
-          email: string
-          raw_user_meta_data: {
-            display_name: string
-          }
-        }
-      }
-    }
-  }
-}
-
 export function MatchStatisticsManagement() {
   const [stats, setStats] = useState<PlayerStats[]>([])
   const [matches, setMatches] = useState<Match[]>([])
@@ -150,27 +81,14 @@ export function MatchStatisticsManagement() {
   const [totalPages, setTotalPages] = useState(1)
   const itemsPerPage = 10
   const supabase = createClient()
+  const { toast } = useToast()
 
-  useEffect(() => {
-    fetchCompetitions()
-    fetchTeams()
-  }, [])
-
-  useEffect(() => {
-    fetchMatches()
-  }, [selectedCompetition])
-
-  useEffect(() => {
-    fetchStats()
-  }, [selectedMatch, selectedTeam, page])
-
-  async function fetchCompetitions() {
+  const fetchCompetitions = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('competitions')
         .select('id, name')
         .order('name')
-
       if (error) throw error
       setCompetitions(data || [])
     } catch (error: any) {
@@ -181,15 +99,14 @@ export function MatchStatisticsManagement() {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase])
 
-  async function fetchTeams() {
+  const fetchTeams = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('teams')
         .select('id, name')
         .order('name')
-
       if (error) throw error
       setTeams(data || [])
     } catch (error: any) {
@@ -200,9 +117,9 @@ export function MatchStatisticsManagement() {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase])
 
-  async function fetchMatches() {
+  const fetchMatches = useCallback(async () => {
     try {
       let query = supabase
         .from('matches')
@@ -256,9 +173,9 @@ export function MatchStatisticsManagement() {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase, selectedCompetition])
 
-  async function fetchStats() {
+  const fetchStats = useCallback(async () => {
     try {
       console.log('[MatchStatistics] Starting fetchStats')
       
@@ -346,7 +263,20 @@ export function MatchStatisticsManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [supabase, selectedMatch, selectedTeam, page])
+
+  useEffect(() => {
+    fetchCompetitions()
+    fetchTeams()
+  }, [fetchCompetitions, fetchTeams])
+
+  useEffect(() => {
+    fetchMatches()
+  }, [fetchMatches])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   async function handleBatchApprove() {
     try {
