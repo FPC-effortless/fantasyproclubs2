@@ -3,8 +3,8 @@
 import { useAuth } from "@/lib/auth-context"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 export function GlobalSignInPrompt() {
   const { user, loading } = useAuth()

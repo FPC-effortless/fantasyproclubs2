@@ -11,12 +11,11 @@ import {
   Save,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/use-toast"
 import {
   Tabs,
   TabsContent,

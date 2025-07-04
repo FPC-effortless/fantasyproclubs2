@@ -1,6 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
-import { Database } from '@/lib/database.types'
 import { createClient } from "@/lib/supabase/client"
+
 
 interface Team {
   id: string

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 
 export function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)

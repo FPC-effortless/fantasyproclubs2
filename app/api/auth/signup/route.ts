@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from "@/lib/supabase/server";
 import { EmailService } from '@/lib/email/email-service';
-import crypto from 'crypto';
+import crypto from 'crypto'
+import { createClient } from "@/lib/supabase/client";
 
 export async function POST(request: NextRequest) {
   try {

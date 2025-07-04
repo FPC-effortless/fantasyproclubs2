@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { type User, type Session } from "@supabase/supabase-js"
 import { getSupabaseClient } from "@/lib/supabase"
-import { toast } from "@/hooks/use-toast"
 
 interface AuthContextType {
   user: User | null

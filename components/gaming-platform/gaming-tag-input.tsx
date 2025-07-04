@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useGamingRealtime } from '@/hooks/use-gaming-realtime'
 import { debounce } from 'lodash'
 import { cn } from '@/lib/utils'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface GamingTagInputProps {
   platform: 'xbox' | 'playstation'

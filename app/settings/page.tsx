@@ -4,13 +4,12 @@ import { useAuth } from "@/lib/auth-context"
 import { getSupabaseClient } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2, User, Mail, Phone, Calendar, Gamepad2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { toast } from "@/hooks/use-toast"
-import { Loader2, User, Mail, Phone, Calendar, Gamepad2 } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 
 interface UserProfile {
   id: string

@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Trophy, Star, Target, Award, Lock, CheckCircle } from 'lucide-react'
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 
 export const metadata: Metadata = {
   title: 'Achievements | Fantasy Pro Clubs',

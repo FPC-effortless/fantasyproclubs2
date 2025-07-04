@@ -1,6 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
 import { useAuth } from '../useAuth'
-import { createClient } from "@/lib/supabase/client"
 import { useRouter } from 'next/navigation'
 import type { User } from '@/types/database'
 

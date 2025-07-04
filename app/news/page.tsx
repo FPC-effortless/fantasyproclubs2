@@ -2,9 +2,9 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Clock, ExternalLink, Newspaper, TrendingUp } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const metadata: Metadata = {
   title: 'News | Fantasy Pro Clubs',

@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronRight, Shirt, Users2, BarChart3, HelpCircle, Plus, Search, Trophy, X, Check, Crown, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 // Fantasy formations defined inline to avoid import issues
 const FANTASY_FORMATIONS = [

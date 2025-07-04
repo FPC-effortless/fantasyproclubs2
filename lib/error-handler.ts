@@ -1,5 +1,5 @@
-import { toast } from '@/hooks/use-toast'
 import { AuthError } from '@supabase/supabase-js'
+import { toast } from "@/components/ui/use-toast"
 
 // Enhanced error types
 export class AppError extends Error {

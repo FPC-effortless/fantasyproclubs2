@@ -4,10 +4,10 @@ import { useEffect, useState } from "react"
 import { Bell, Mail, Settings } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { toast } from "@/components/ui/use-toast"
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface NotificationPreferences {
   email: boolean

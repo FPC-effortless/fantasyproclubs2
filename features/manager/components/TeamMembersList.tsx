@@ -3,11 +3,11 @@
 import { useState } from "react"
 import { TeamMember } from "@/types/team"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Gamepad2, Copy, Filter } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 
 interface TeamMembersListProps {

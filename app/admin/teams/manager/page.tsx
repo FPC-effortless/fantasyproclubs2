@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useToast } from '@/components/ui/use-toast'
-import { createClient } from '@/lib/supabase/client'
+import { useToast, toast } from "@/components/ui/use-toast"
 import { AdminLayout } from '@/components/admin/layout'
+import { createClient } from "@/lib/supabase/client"
 
 export default function TeamManagerPage() {
   const [teams, setTeams] = useState<any[]>([])

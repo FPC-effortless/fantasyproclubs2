@@ -15,7 +15,8 @@ import {
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 import {
   Tabs,
   TabsContent,
@@ -29,8 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/hooks/use-toast"
 import {
   LineChart,
   Line,

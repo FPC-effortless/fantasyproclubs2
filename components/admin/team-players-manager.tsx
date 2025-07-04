@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
 import {
   Table,
@@ -19,11 +18,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { toast } from "@/hooks/use-toast"
 import { UserPlus, UserMinus, Search, Loader2 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 type Team = Database['public']['Tables']['teams']['Row']
 

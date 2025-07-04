@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { RefreshCw } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 
 export function UpdateNotification() {
   const [showUpdate, setShowUpdate] = useState(false)

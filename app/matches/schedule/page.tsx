@@ -2,9 +2,9 @@ import { Metadata } from 'next'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { MatchList } from '@/components/matches/match-list'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Calendar, Filter, Plus, Clock, Trophy, Users, Target } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const metadata: Metadata = {
   title: 'Match Schedule | Fantasy Pro Clubs',

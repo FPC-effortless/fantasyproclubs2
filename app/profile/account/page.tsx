@@ -2,10 +2,10 @@
 
 import { useAuth } from "@/lib/auth-context"
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export default function ManageAccountPage() {
   const { user } = useAuth()

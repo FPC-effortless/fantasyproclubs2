@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { useSupabase } from "@/components/providers/supabase-provider"
-import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export function LogoutButton() {
   const router = useRouter()

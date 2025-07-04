@@ -1,5 +1,3 @@
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import {
   User,
   Team,
@@ -13,6 +11,7 @@ import {
 } from '@/types/database'
 import { handleError } from "@/lib/errors"
 import { ApiResponse, createSuccessResponse, createErrorResponse, ApiRequestConfig } from "@/lib/types/api"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/components/ui/use-toast"
 
 const supabase = createClient()

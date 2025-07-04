@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { Users, CheckCircle2, XCircle, Gamepad2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
+import { createClient } from "@/lib/supabase/client"
 import {
   BarChart,
   Bar,

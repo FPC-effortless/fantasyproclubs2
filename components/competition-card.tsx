@@ -1,8 +1,8 @@
 import { Calendar, Users, Trophy, ExternalLink } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import type { Competition } from "@/types"
+import { Badge } from "@/components/ui/badge"
 
 interface CompetitionCardProps {
   competition: Competition

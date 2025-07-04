@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import PlayerPriceManagement from '@/components/admin/player-price-management'
-import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/use-toast'
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export default function FantasyManagementPage() {
   const [isInitializing, setIsInitializing] = useState(false)

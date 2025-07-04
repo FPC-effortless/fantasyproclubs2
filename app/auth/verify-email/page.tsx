@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, CheckCircle, RefreshCw, Clock, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { toast } from '@/hooks/use-toast'
 import { useAuth } from '@/lib/auth-context'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export default function VerifyEmailPage() {
   const router = useRouter()

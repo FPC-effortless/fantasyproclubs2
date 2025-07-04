@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { toast } from 'react-hot-toast'
 import { useParams } from 'next/navigation'
+import { createClient } from "@/lib/supabase/client"
 
 interface SwissConfig {
   id: string

@@ -3,9 +3,6 @@
 import { useState, useEffect } from "react"
 import { CheckCircle2, XCircle, Download, Filter, Search } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import {
   Table,
   TableBody,
@@ -27,9 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { UpgradeRequestModal } from "./upgrade-request-modal"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/components/ui/use-toast"
 
 interface UpgradeRequest {

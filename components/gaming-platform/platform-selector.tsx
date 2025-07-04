@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { Label } from "@/components/ui/label"
 
 interface PlatformSelectorProps {
   value: 'xbox' | 'playstation' | 'both'

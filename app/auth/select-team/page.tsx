@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Trophy, Shield, Search } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
-import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
-import { Input } from '@/components/ui/input'
 import styles from './select-team.module.css'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

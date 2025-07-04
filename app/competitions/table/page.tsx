@@ -5,13 +5,11 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Trophy, TrendingUp, TrendingDown, Minus, ChevronUp, ChevronDown, ArrowUpDown, Users, Target, Shield } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/components/ui/use-toast"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface TeamStanding {
   position: number

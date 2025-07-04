@@ -3,12 +3,11 @@
 import { useState } from "react"
 import { CheckCircle2, XCircle, Gamepad2, User, Clock, AlertCircle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/components/ui/use-toast"
 
 interface UpgradeRequest {

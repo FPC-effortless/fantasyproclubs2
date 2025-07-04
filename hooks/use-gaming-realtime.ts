@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
-import { toast } from "sonner"
 import { RealtimeChannel } from "@supabase/supabase-js"
 
 interface UpgradeRequest {

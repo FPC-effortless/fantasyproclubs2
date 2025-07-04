@@ -3,14 +3,11 @@
 import { useEffect, useState, useCallback } from "react"
 import { Trophy, Award, Star, Medal, Crown, Target, Shield, ArrowLeft, Search, Filter, User, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
-import { createClient } from '@/lib/supabase/client'
 import Image from "next/image"
+import { toast } from "@/components/ui/use-toast"
 
 interface Competition {
   id: string

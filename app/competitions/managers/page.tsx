@@ -5,12 +5,11 @@ import { UserCog, ArrowLeft, Search, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ManagerCard } from "@/components/ui/manager-card"
-import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import Image from "next/image"
 import styles from './managers.module.css'
+import { toast } from "@/components/ui/use-toast"
 
 interface Competition {
   id: string

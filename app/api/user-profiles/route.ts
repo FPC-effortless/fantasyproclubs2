@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
+import { createClient } from "@/lib/supabase/client"
 
 // GET /api/user-profiles - Get all user profiles or filter by query params
 export async function GET(request: Request) {

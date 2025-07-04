@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
 import { useRouter } from 'next/navigation'
 import {
@@ -20,11 +19,12 @@ import {
   LogOut,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { toast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface DashboardStats {
   totalUsers: number

@@ -6,14 +6,12 @@ import { LayoutWrapper } from '@/components/layout-wrapper'
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { PlayerCard } from '@/components/ui/player-card'
 import { ManagerCard } from '@/components/ui/manager-card'
-import { toast } from '@/components/ui/use-toast'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, ExternalLink, Calendar, MapPin, Trophy, Users, TrendingUp, Shield, Star, Target } from 'lucide-react'
 import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface Team {
   id: string

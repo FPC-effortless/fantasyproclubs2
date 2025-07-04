@@ -3,12 +3,12 @@
 import { useState } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Edit, Trophy, Users, Calendar } from "lucide-react"
 import styles from './ManagerProfileScreen.module.css'
 import { TeamMember } from "@/types/team"
 import { Fixture } from "@/types/match"
+import { Button } from "@/components/ui/button"
 
 interface Team {
   id: string

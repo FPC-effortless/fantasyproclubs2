@@ -1,5 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
 import { AdminLayoutClient } from './admin-layout-client'
+import { createClient } from "@/lib/supabase/client"
 
 export default async function AdminLayout({
   children,

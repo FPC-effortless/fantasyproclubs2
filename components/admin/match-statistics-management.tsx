@@ -16,8 +16,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -33,10 +31,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/hooks/use-toast"
 import { Check, X, Edit2, Search, Trophy, Filter, ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { 
   Trophy, 
   ArrowLeft, 
@@ -12,9 +10,11 @@ import {
   Target,
   Award
 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export default function CompetitionManagementPage() {
   const [competitions, setCompetitions] = useState<any[]>([])

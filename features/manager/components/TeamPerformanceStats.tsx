@@ -2,9 +2,9 @@
 
 import { TeamPerformance } from "@/types/team"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 
 interface TeamPerformanceStatsProps {
   performance: TeamPerformance

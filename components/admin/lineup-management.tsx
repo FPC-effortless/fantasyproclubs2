@@ -3,10 +3,6 @@
 import { useState, useEffect } from "react"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { 
   Select, 
   SelectContent, 
@@ -30,7 +26,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { toast } from "@/hooks/use-toast"
 import { 
   Clipboard, 
   Plus, 
@@ -51,6 +46,11 @@ import {
 import { Loading } from "@/components/ui/loading"
 import { formations, Formation } from "@/lib/formations"
 import { AdminDebugger } from "@/lib/debug-utils"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

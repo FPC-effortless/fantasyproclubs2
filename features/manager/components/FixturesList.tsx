@@ -2,9 +2,9 @@
 
 import { Fixture } from "@/types/match"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Calendar, MapPin } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 interface FixturesListProps {
   fixtures: Fixture[]

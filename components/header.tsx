@@ -21,7 +21,6 @@ import {
   UserPlus,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,8 +31,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 type UserRole = "admin" | "manager" | "player" | "fan"
 

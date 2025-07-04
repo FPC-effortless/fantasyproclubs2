@@ -34,22 +34,19 @@ import {
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
 import { PlatformBadge } from "@/components/gaming-platform/platform-badge"
 import { LogoutButton } from "@/components/auth/logout-button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 // Import createClientComponentClient outside useEffect
-import { createClient } from "@/lib/supabase/client"
 
 // Helper function to create empty fan profile data
 function getEmptyFanProfileData(): FanProfileData {

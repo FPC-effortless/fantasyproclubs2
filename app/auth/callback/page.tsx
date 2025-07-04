@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
 import { Loader2, CheckCircle, Shield } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
 
 interface State {
   status: 'processing' | 'success' | 'error'

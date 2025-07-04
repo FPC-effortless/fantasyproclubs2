@@ -3,13 +3,11 @@
 import { useEffect, useState, useCallback } from "react"
 import { ArrowRightLeft, User, Calendar, DollarSign, Search, Filter, Clock, CheckCircle, XCircle, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import Image from "next/image"
+import { toast } from "@/components/ui/use-toast"
 
 interface Competition {
   id: string

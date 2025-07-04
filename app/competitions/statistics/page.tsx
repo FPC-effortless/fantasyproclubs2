@@ -5,14 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Target, Trophy, Shield, Users, TrendingUp, Award, BarChart3, PieChart, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface PlayerStat {
   id: string

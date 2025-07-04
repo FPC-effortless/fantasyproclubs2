@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import { Player, Match } from '@/types/database'
+import { createClient } from "@/lib/supabase/client"
 
 export function useStats() {
   const [loading, setLoading] = useState(true)

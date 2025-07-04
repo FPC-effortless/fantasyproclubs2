@@ -9,12 +9,12 @@ import {
 } from "lucide-react"
 import { useCompetitions } from "@/hooks/use-competitions"
 import { useSupabase } from "@/components/providers/supabase-provider"
-import { toast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "@/components/ui/use-toast"
 
 interface TeamStanding {
   position: number

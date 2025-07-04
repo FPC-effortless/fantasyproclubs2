@@ -5,11 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar, Clock, MapPin, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/components/providers/supabase-provider"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
 import { MatchCard } from "@/components/match/match-card"
+import { toast } from "@/components/ui/use-toast"
 
 interface Fixture {
   id: string

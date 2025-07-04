@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Loading } from "@/components/loading"
 import { AdminNav } from "@/components/admin/admin-nav"
-import { toast } from "@/hooks/use-toast"
 import { SupabaseClient } from '@supabase/supabase-js'
+import { toast } from "@/components/ui/use-toast"
 
 interface AdminLayoutClientProps {
   children: React.ReactNode

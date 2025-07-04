@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/client"
 import type { Notification } from '@/types/database'
+import { createClient } from "@/lib/supabase/client"
 
 const supabase = createClient()
 

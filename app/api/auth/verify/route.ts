@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { EmailService } from '@/lib/email/email-service'
+import { cookies } from "next/headers"
 
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies()

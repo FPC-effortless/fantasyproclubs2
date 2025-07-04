@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useAuth } from "@/lib/auth-context"
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export function RegisterForm() {
   const [error, setError] = useState<string>("")

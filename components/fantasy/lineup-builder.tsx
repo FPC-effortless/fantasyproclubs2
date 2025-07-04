@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Save, Users } from "lucide-react"
 import { FANTASY_FORMATIONS, isLineupValid, getFantasyRole } from '@/lib/fantasy/formations'
 import { FormationGrid } from './formation-grid'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface Player {
   id: string

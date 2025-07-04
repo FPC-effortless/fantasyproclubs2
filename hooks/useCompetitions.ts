@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import { Competition } from '@/types/database'
+import { createClient } from "@/lib/supabase/client"
 
 export function useCompetitions() {
   const [competitions, setCompetitions] = useState<Competition[]>([])

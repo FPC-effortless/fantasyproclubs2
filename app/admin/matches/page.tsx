@@ -2,9 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { MatchManagement } from "@/components/admin/match-management"
-import { Badge } from "@/components/ui/badge"
 import { Calendar, Activity, Trophy, Target } from "lucide-react"
 import styles from './matches.module.css'
+import { Badge } from "@/components/ui/badge"
 
 export default function MatchesPage() {
   return (

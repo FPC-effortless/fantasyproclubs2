@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Users, Search, UserPlus, MessageCircle, UserMinus, Mail, Trophy, Clock, Globe } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 
 export const metadata: Metadata = {
   title: 'Friends | Fantasy Pro Clubs',

@@ -4,13 +4,11 @@ import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { Trophy, Users, UserCog, Award, ArrowRightLeft, FileText, Search, ChevronRight, Calendar, BarChart3, Table, TrendingUp, Shield, ArrowLeftRight, User, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
-import { Badge } from "@/components/ui/badge"
 import styles from "./competitions.module.css"
+import { Badge } from "@/components/ui/badge"
+import { toast } from "@/components/ui/use-toast"
 
 interface Competition {
   id: string

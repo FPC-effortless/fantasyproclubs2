@@ -1,8 +1,8 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useSignInModal } from "./SignInModalContext";
+import { useSignInModal } from "./SignInModalContext"
+import { Button } from "@/components/ui/button";
 
 export default function SignInModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();

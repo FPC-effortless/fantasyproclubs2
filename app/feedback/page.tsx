@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/use-toast"
 
 import { 
   MessageCircle, 
@@ -18,7 +19,6 @@ import {
   AlertCircle,
 
 } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
 
 const feedbackTypes = [
   { id: "bug", label: "Bug Report", icon: Bug, color: "text-red-400" },

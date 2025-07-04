@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
+import { createClient } from "@/lib/supabase/client"
 
 type RealtimeEvent = 'INSERT' | 'UPDATE' | 'DELETE'
 

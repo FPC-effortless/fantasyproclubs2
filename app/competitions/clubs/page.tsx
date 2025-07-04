@@ -3,11 +3,10 @@
 import { useEffect, useState, useCallback } from "react"
 import { useSupabase } from "@/components/providers/supabase-provider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/use-toast"
 import { Search, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { toast } from "@/components/ui/use-toast"
 
 interface Competition {
   id: string;

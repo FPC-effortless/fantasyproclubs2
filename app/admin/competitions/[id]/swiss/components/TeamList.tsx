@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { toast } from 'react-hot-toast'
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
 
 interface Team {
   id: string

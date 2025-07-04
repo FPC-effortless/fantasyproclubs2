@@ -3,14 +3,14 @@
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { User, LogOut, Moon, Bell, Info, Shield, HelpCircle, ChevronRight, Users, Trophy, Share2, MessageCircle, ClipboardList, BarChart2, CheckCircle2, ShoppingCart, Repeat2, UserCheck, UserPlus, Lock, Star, Gamepad2, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { createClient } from '@/lib/supabase/client'
-import { toast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export default function MorePage() {
   const { user, loading } = useAuth()

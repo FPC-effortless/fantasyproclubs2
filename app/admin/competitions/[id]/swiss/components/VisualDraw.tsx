@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Database } from '@/types/database'
-import { toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
 import DrawStage from './animations/DrawStage'
 import CompletionAnimation from './animations/CompletionAnimation'
+import { createClient } from "@/lib/supabase/client"
 
 type Tables = Database['public']['Tables']
 type SwissConfigRow = Tables['swiss_model_configs']['Row']

@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import Image from "next/image"
-import { createClient } from '@/lib/supabase/client'
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
 
 const ONBOARDING_KEY = "onboarding_complete"
 

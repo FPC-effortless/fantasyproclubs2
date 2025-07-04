@@ -1,12 +1,12 @@
 "use client"
 
 import { useRouter } from 'next/navigation'
-import { Badge } from './badge'
 import { Card, CardContent } from './card'
-import { Button } from './button'
 import Image from 'next/image'
 import { Trophy, Target, Users, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface Player {
   id: string

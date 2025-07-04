@@ -2,20 +2,19 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { createClient } from "@/lib/supabase/client"
 import { Loader2 } from 'lucide-react'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
 import { GamingTagInput } from '@/components/gaming-platform/gaming-tag-input'
 import { PlatformSelector } from '@/components/gaming-platform/platform-selector'
 import { accountUpgradeSchema, type AccountUpgradeFormData } from '@/lib/validations/account-upgrade'
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export function AccountUpgradeForm() {
   const [isLoading, setIsLoading] = useState(false)

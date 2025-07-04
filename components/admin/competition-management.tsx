@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Database } from "@/types/database"
 import {
   Trophy,
   Calendar,
@@ -21,9 +19,6 @@ import {
   UserMinus,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   DropdownMenu,
@@ -42,7 +37,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DatePicker } from "@/components/ui/date-picker"
@@ -52,6 +46,11 @@ import { useRouter } from 'next/navigation'
 import { Checkbox } from "@/components/ui/checkbox"
 import { SwissModelConfigForm } from './swiss-model-config'
 import type { SwissModelConfig } from './swiss-model-config'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
 
 type Tables = Database['public']['Tables']
 type CompetitionRow = Tables['competitions']['Row']

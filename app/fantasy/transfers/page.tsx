@@ -5,15 +5,12 @@ import Link from "next/link"
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { ChevronLeft, Search, Trophy, Users, Filter, Star, DollarSign, BarChart3, HelpCircle, Shirt, Users2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Database } from "@/types/database"
 import { openSignInModal } from '@/components/auth/SignInModal'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 interface Competition {
   id: string

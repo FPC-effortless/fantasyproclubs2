@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { ChevronDown, Crown, Settings, Users, Activity, RotateCcw, Play, Plus, ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -13,12 +12,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { Database } from '@/types/database'
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
-import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { openSignInModal } from '@/components/auth/SignInModal'
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface FantasyTeam {
   id: string

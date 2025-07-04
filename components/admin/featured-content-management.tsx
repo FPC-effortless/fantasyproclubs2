@@ -10,12 +10,12 @@ import {
   Info,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/use-toast"
 import {
   Dialog,
   DialogContent,

@@ -1,10 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/lib/database.types'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -21,9 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { toast } from '@/components/ui/use-toast'
 import { Search, Save, Trophy, Info } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 import {
   Tooltip,
   TooltipContent,

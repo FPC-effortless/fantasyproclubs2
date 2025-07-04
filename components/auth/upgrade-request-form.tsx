@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/lib/auth-context"
 import { upgradeRequestSchema, type UpgradeRequestFormData } from "@/lib/validations/auth"
+import { Button } from "@/components/ui/button"
 
 export function UpgradeRequestForm() {
   const [error, setError] = useState<string>("")

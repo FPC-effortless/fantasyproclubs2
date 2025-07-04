@@ -1,8 +1,7 @@
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/types/database"
-import { toast } from "@/components/ui/use-toast"
 import { ValidationError, DatabaseError } from "@/lib/errors"
 import { ApiResponse, createSuccessResponse, createErrorResponse } from "@/lib/types/api"
+import { createClient } from "@/lib/supabase/client"
 
 export interface ValidationResult {
   isValid: boolean

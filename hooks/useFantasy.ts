@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import { FantasyTeam, Player } from '@/types/database'
+import { createClient } from "@/lib/supabase/client"
 
 export function useFantasy() {
   const [fantasyTeams, setFantasyTeams] = useState<FantasyTeam[]>([])

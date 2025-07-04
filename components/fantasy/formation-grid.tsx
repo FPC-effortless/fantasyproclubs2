@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { User } from "lucide-react"
 import { FANTASY_FORMATIONS, isLineupValid, getFantasyRole } from '@/lib/fantasy/formations'
+import { Badge } from "@/components/ui/badge"
 
 interface Player {
   id: string

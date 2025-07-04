@@ -4,10 +4,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { toast } from '@/components/ui/use-toast'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Share2, Eye, Calendar, Clock, MapPin, Play } from 'lucide-react'
 import Link from 'next/link'
 import { MatchOverview } from '@/components/match/match-overview'
@@ -16,6 +12,9 @@ import { MatchTable } from '@/components/match/match-table'
 import { MatchLineup } from '@/components/match/match-lineup'
 import { StreamModal } from '@/components/match/stream-modal'
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { toast } from "@/components/ui/use-toast"
 
 interface Match {
   id: string

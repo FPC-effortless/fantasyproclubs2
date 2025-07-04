@@ -1,10 +1,10 @@
 "use client"
 
 import { useRouter } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Calendar, Clock, MapPin, Trophy } from 'lucide-react'
 import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface MatchCardProps {
   match: {

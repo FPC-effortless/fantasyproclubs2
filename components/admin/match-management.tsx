@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
 import {
   Card,
   CardContent,
@@ -33,13 +32,15 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Calendar } from "@/components/ui/calendar"
-import { Badge } from "@/components/ui/badge"
-import { toast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { generateFixtures } from "@/utils/fixture-generator"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 import {
   CompetitionSettings,
   CompetitionType,

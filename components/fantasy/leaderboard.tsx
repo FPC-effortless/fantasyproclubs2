@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Trophy, Medal, TrendingUp, TrendingDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 interface LeaderboardProps {
   standings: any[]

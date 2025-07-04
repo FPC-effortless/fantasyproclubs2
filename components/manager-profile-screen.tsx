@@ -23,14 +23,9 @@ import {
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import styles from "./manager-profile-screen.module.css"
 import { cn } from "@/lib/utils"
@@ -38,7 +33,12 @@ import { LogoutButton } from "@/components/auth/logout-button"
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import { LoadingState } from './loading-state';
-import type { BarProps, XAxisProps, YAxisProps } from 'recharts';
+import type { BarProps, XAxisProps, YAxisProps } from 'recharts'
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
+import { createClient } from "@/lib/supabase/client";
 
 // Create a separate dynamic chart component
 const DynamicChart = dynamic(() => import('./charts/performance-chart'), {

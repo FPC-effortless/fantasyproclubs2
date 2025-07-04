@@ -2,6 +2,7 @@
 
 // Inspired by react-hot-toast library
 import * as React from "react"
+import { toast } from "@/components/ui/use-toast"
 
 import type {
   ToastActionElement,

@@ -1,10 +1,9 @@
 "use client"
 
-import { Progress } from '@/components/ui/progress'
 import { Target, Zap, Shield, Activity, Trophy, Calendar } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Match {
   id: string

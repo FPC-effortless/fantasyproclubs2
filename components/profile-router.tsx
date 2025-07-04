@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { useSupabase } from "@/components/providers/supabase-provider"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { User, MapPin, Calendar, Trophy, Settings, Shield, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/use-toast"
 
 interface UserProfile {

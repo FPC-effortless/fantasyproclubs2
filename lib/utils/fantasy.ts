@@ -1,4 +1,3 @@
-import { Database } from '@/lib/database.types'
 
 type PlayerMatchStats = Database['public']['Tables']['player_match_stats']['Row']
 

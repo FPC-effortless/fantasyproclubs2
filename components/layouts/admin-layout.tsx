@@ -17,8 +17,8 @@ import {
   LogOut
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/components/providers/supabase-provider"
+import { Button } from "@/components/ui/button"
 
 interface AdminLayoutProps {
   children: React.ReactNode

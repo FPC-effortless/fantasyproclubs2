@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
-import { toast } from '@/hooks/use-toast'
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 type Match = {
   id: string

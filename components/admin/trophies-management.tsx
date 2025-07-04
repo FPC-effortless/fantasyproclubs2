@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
 import {
   Card,
   CardContent,
@@ -25,15 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Trophy as TrophyIcon, Upload, Award, Users, User } from "lucide-react"
 import { Trophy, TrophyType, TrophyAward, TrophyRecipient } from "@/types/trophy"
 import { Competition } from "@/types/competition"
-import { toast } from "@/hooks/use-toast"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 export function TrophiesManagement() {
   const [trophies, setTrophies] = useState<Trophy[]>([])

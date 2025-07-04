@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useSupabase } from '@/components/providers/supabase-provider'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChevronLeft, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChevronLeft, BarChart3 } from "lucide-react"
 // If you have a chart library, import it here. Otherwise, use a placeholder.
 // import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 

@@ -1,8 +1,8 @@
 // CLEAN BUILD TRIGGER
 import { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
+import { cookies } from "next/headers"
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic'

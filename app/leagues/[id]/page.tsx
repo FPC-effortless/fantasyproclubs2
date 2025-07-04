@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { LayoutWrapper } from '@/components/layout-wrapper'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trophy, Users, Calendar, Target } from 'lucide-react'
+import { Badge } from "@/components/ui/badge"
 
 export const metadata: Metadata = {
   title: 'League Details | EA FC Pro Clubs',

@@ -2,8 +2,8 @@
 
 import { TeamManagement } from "@/components/admin/team-management"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Users, Settings, Trophy } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 export default function TeamsPage() {
   return (

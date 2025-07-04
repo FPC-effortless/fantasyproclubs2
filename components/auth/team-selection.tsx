@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { createClient } from "@/lib/supabase/client"
 import type { Database } from '@/types/database'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
 import { Search, Users, Star, Check } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
-import { Label } from '@/components/ui/label'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

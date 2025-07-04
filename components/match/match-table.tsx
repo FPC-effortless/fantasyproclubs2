@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import { Trophy, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react'
-import { createClient } from "@/lib/supabase/client"
 import Image from 'next/image'
 import { CompetitionTable } from '../competition-table'
 

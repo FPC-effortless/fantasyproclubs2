@@ -3,10 +3,10 @@
 import { useSearchParams, useParams, useRouter } from "next/navigation"
 import { useEffect, useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
 
 interface PlayerStat {
   id: string

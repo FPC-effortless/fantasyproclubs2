@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
 import { executeQuery, handleSupabaseQuery } from "@/lib/utils/supabase-query"
 import { NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/client"
 
 // GET /api/matches - Get all matches or filter by query params
 export async function GET(request: Request) {

@@ -1,13 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Search, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useSupabase } from '@/components/providers/supabase-provider'
-import { toast } from "@/hooks/use-toast"
-import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

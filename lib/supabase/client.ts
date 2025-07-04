@@ -1,4 +1,5 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient } from "@supabase/ssr"
+import { createClient } from "@/lib/supabase/client";
 
 export function createClient() {
   return createBrowserClient(

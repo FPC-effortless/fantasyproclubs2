@@ -1,6 +1,5 @@
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database'
 import { handleError, withErrorHandling } from '@/lib/error-handler'
+import { createClient } from "@/lib/supabase/client"
 
 export class SecureDatabaseClient {
   private supabase = createClient()

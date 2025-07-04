@@ -1,7 +1,6 @@
 "use client"
 
 import { RegisterForm } from "@/components/auth/register-form"
-import { Trophy } from "lucide-react"
 
 export default function RegisterPage() {
   return (

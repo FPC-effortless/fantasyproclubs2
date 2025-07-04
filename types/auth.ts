@@ -1,4 +1,3 @@
-import { Database } from './database';
 
 export type User = Database['public']['Tables']['users']['Row'];
 export type UserRole = 'admin' | 'manager' | 'player';

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Check, Copy, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/use-toast'
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 
 interface PlatformBadgeProps {
   platform: 'xbox' | 'playstation'

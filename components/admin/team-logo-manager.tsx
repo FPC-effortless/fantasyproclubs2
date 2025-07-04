@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { createClient } from "@/lib/supabase/client"
-import { toast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Loader2, Upload } from 'lucide-react'
 import type { Database } from '@/types/database'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 type Team = Database['public']['Tables']['teams']['Row']
 

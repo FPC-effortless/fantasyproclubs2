@@ -2,7 +2,6 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { checkRateLimit, apiRateLimiter } from './rate-limit'
 import { ValidationError } from './errors'
 import { sanitizeString } from './utils/sanitize'
-import { Database } from '../types/database'
 import { apiLogger, measureExecutionTime } from './logger'
 
 // Create Supabase client

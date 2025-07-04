@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
 import { executeQuery, handleSupabaseQuery } from '@/lib/utils/supabase-query'
+import { createClient } from "@/lib/supabase/client"
 
 // GET /api/teams - Get all teams or filter by query params
 export async function GET(request: Request) {

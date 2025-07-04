@@ -4,16 +4,14 @@ import { useState, useEffect, useCallback } from "react"
 import { ChevronLeft, Trophy, Users, Search, Filter, BarChart3, HelpCircle, Shirt, Users2 } from "lucide-react"
 import Link from "next/link"
 import { useSupabase } from "@/components/providers/supabase-provider"
-import { Database } from "@/lib/database.types"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
 import { openSignInModal } from '@/components/auth/SignInModal'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 
 interface Competition {
   id: string

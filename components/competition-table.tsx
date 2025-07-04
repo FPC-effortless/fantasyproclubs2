@@ -3,11 +3,11 @@
 import { useState, useEffect, useMemo } from "react"
 import { Trophy, ChevronUp, ChevronDown, ArrowUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Skeleton } from "@/components/ui/skeleton"
+import { createClient } from "@/lib/supabase/client"
 
 interface TeamStanding {
   position: number

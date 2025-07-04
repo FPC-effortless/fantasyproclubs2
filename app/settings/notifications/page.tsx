@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { Bell, Mail, MessageSquare, Calendar, Trophy, Users, Settings, Save } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { toast } from 'react-hot-toast'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { createClient } from "@/lib/supabase/client"
 
 interface NotificationSettings {
   email: {

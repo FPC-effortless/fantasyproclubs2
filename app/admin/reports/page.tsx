@@ -3,10 +3,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { createClient } from '@/lib/supabase/client'
-import { toast } from "@/hooks/use-toast"
 import {
   BarChart,
   Users,
@@ -35,6 +31,10 @@ import {
 } from "recharts"
 import { SupabaseClient } from "@supabase/supabase-js"
 import styles from "./reports.module.css"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "@/components/ui/use-toast"
 
 interface ReportsData {
   overview: {

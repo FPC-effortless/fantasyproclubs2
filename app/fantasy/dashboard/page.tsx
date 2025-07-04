@@ -3,17 +3,14 @@
 import { useState, useEffect, useCallback } from "react"
 import { ChevronLeft, Trophy, TrendingUp, Users, Crown, Activity, Clock, Star, Target, ArrowUpDown, Plus, Minus } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
-import { createClient } from '@/lib/supabase/client'
-import { Database } from '@/types/database'
-import { Skeleton } from "@/components/ui/skeleton"
 import { openSignInModal } from '@/components/auth/SignInModal'
 import { useRouter } from 'next/navigation'
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { createClient } from "@/lib/supabase/client"
 
 interface FantasyTeam {
   id: string

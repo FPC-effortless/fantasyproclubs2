@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useSupabase } from "@/components/providers/supabase-provider"
+import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 
 interface SignOutButtonProps {

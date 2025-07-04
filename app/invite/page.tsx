@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
+import { toast } from "@/components/ui/use-toast"
 import { 
   Share2, 
   Users, 
@@ -20,7 +20,6 @@ import {
   Facebook,
   Instagram
 } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
 
 export default function InvitePage() {
   const [email, setEmail] = useState("")

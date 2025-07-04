@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Eye, EyeOff, UserPlus, Check, X, Users, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { toast } from '@/hooks/use-toast'
 import { validatePassword } from '@/lib/utils/password-strength'
 import { useAuth } from '@/lib/auth-context'
 import { TeamSelection } from './team-selection'
 import { useSupabase } from '@/components/providers/supabase-provider'
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 
 const STEPS = [
   { id: 1, title: 'Create Account', description: 'Basic account information' },

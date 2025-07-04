@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import SwissConfig from './SwissConfig'
 import VisualDraw from './VisualDraw'
 import TeamList from './TeamList'
-import { toast } from 'react-hot-toast'
 
 interface SwissModelContentProps {
   competitionId: string

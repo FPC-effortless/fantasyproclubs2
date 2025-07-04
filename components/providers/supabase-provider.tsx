@@ -3,9 +3,9 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { type SupabaseClient } from "@supabase/supabase-js"
 import { type Session } from "@supabase/supabase-js"
-import { toast } from "@/hooks/use-toast"
 import type { Database } from "@/types/database"
 import { getSupabaseClient } from "@/lib/supabase"
+import { toast } from "@/components/ui/use-toast"
 
 type SupabaseContext = {
   supabase: SupabaseClient

@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation"
 import { getSupabaseClient } from "@/lib/supabase"
 import { useEffect, useState } from "react"
 import { TeamCard } from "@/components/teams/team-card"
-import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 
 interface Team {
   id: string

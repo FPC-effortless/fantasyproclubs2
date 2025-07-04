@@ -1,8 +1,8 @@
 "use client"
 
 import { Users, User, RotateCcw, AlertTriangle } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import { Badge } from "@/components/ui/badge"
 
 interface Match {
   id: string
