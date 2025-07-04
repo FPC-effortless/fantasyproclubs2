@@ -26,14 +26,6 @@ interface SwissConfig {
   }>
 }
 
-const DEFAULT_TIEBREAKERS = [
-  'points',
-  'goal_difference',
-  'goals_for',
-  'head_to_head',
-  'initial_seed'
-]
-
 export default function SwissConfig({
   competitionId,
   onConfigured
