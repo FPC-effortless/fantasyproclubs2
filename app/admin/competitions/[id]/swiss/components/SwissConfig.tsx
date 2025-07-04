@@ -86,7 +86,7 @@ export default function SwissConfig({
       }
 
       // Load existing config
-      const { data: configData, error: configError } = await supabase
+      const { data: configData } = await supabase
         .from('swiss_model_configs')
         .select('*')
         .eq('competition_id', competitionId)
