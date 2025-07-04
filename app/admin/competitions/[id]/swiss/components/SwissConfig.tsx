@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Database } from '@/types/database'
 import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
 
