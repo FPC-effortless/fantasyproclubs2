@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Database } from '@/lib/database.types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 
